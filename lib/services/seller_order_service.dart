@@ -1,62 +1,62 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SellerOrderService {
+// class SellerOrderService {
 
-  final supabase =
-      Supabase.instance.client;
+//   final supabase =
+//       Supabase.instance.client;
 
-  Future<List<dynamic>>
-      getOrders() async {
+//   Future<List<dynamic>>
+//       getOrders() async {
 
-    final user =
-        supabase.auth.currentUser;
+//     final user =
+//         supabase.auth.currentUser;
 
-    final result =
-        await supabase
-            .from('order_items')
-            .select('''
-              *,
-              orders(*)
-            ''')
-            .eq(
-              'seller_id',
-              user!.id,
-            );
+//     final result =
+//         await supabase
+//             .from('order_items')
+//             .select('''
+//               *,
+//               orders(*)
+//             ''')
+//             .eq(
+//               'seller_id',
+//               user!.id,
+//             );
 
-    return result;
-  }
+//     return result;
+//   }
 
-  Future<void>
-      shipOrder({
+//   Future<void>
+//       shipOrder({
 
-    required String orderId,
+//     required String orderId,
 
-    required String kurir,
+//     required String kurir,
 
-    required String resi,
+//     required String resi,
 
-  }) async {
+//   }) async {
 
-    await supabase
-        .from('orders')
-        .update({
+//     await supabase
+//         .from('orders')
+//         .update({
 
-      'order_status':
-          'shipped',
+//       'order_status':
+//           'shipped',
 
-      'kurir':
-          kurir,
+//       'kurir':
+//           kurir,
 
-      'nomor_resi':
-          resi,
+//       'nomor_resi':
+//           resi,
 
-      'shipped_at':
-          DateTime.now()
-              .toIso8601String(),
+//       'shipped_at':
+//           DateTime.now()
+//               .toIso8601String(),
 
-    }).eq(
-      'id',
-      orderId,
-    );
-  }
-}
+//     }).eq(
+//       'id',
+//       orderId,
+//     );
+//   }
+// }

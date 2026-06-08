@@ -231,6 +231,73 @@ class ProductService {
   }
 
   // =========================
+// ADMIN GET ALL PRODUCTS
+// =========================
+
+  Future<List<dynamic>> getAllProductsAdmin() async {
+    try {
+      final data = await supabase
+          .from('products')
+          .select('''
+            *,
+            profiles (
+              id,
+              nama,
+              email
+            )
+          ''')
+          .order(
+            'created_at',
+            ascending: false,
+          );
+
+      return data;
+    } catch (e) {
+      throw Exception(
+        'Gagal mengambil data produk: $e',
+      );
+    }
+  }
+
+  Future<void> deleteProductAdmin({
+    required String productId,
+    required String imageUrl,
+  }) async {
+    try {
+      final fileName = imageUrl.split('/').last;
+
+      await supabase.storage
+          .from('products')
+          .remove([fileName]);
+
+      await supabase
+          .from('products')
+          .delete()
+          .eq('id', productId);
+    } catch (e) {
+      throw Exception('Admin gagal menghapus produk: $e');
+    }
+  }
+  Future<dynamic> getProductDetailAdmin(
+    String productId,
+  ) async {
+    try {
+      final data = await supabase
+          .from('products')
+          .select()
+          .eq('id', productId)
+          .single();
+
+      return data;
+    } catch (e) {
+      throw Exception(
+        'Gagal mengambil detail produk: $e',
+      );
+    }
+  }
+
+
+  // =========================
   // DELETE PRODUCT
   // =========================
 

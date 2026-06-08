@@ -130,6 +130,16 @@ class OrderService {
         .single();
   }
 
+  Future<void> markAsPaid(String orderId) async {
+    await supabase
+        .from('orders')
+        .update({
+          'payment_status': 'paid',
+          'order_status': 'pending',
+        })
+        .eq('id', orderId);
+  }
+
   Future<void>
       confirmReceived(
     String orderId,
