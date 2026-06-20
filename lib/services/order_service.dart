@@ -1,85 +1,158 @@
-import 'package:smwaste/services/notification_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'notification_service.dart';
 
 class OrderService {
   final supabase = Supabase.instance.client;
 
-  // ===================================
+  //==========================================================
   // ORDER PEMBELI
-  // ===================================
+  //==========================================================
 
-  Future<List<dynamic>> getMyOrders() async {
+  Future<List<Map<String, dynamic>>> getMyOrders() async {
     final user = supabase.auth.currentUser;
 
     if (user == null) {
       throw Exception("User belum login");
     }
 
-    return await supabase
+    final data = await supabase
         .from("orders")
         .select()
-        .eq(
-          "buyer_id",
-          user.id,
-        )
+        .eq("buyer_id", user.id)
         .order(
           "created_at",
           ascending: false,
         );
+
+    return List<Map<String, dynamic>>.from(data);
   }
 
-  // ===================================
+  //==========================================================
   // ITEM ORDER
-  // ===================================
+  //==========================================================
 
-  Future<List<dynamic>> getOrderItems(
+  Future<List<Map<String, dynamic>>> getOrderItems(
     String orderId,
   ) async {
-    return await supabase
+    final data = await supabase
         .from("order_items")
         .select("""
           *,
           products(
+            id,
             nama_produk,
-            image_url
+            image_url,
+            harga
           )
         """)
         .eq(
           "order_id",
           orderId,
         );
+
+    return List<Map<String, dynamic>>.from(data);
   }
 
-  // ===================================
+  //==========================================================
   // ORDER PENJUAL
-  // ===================================
+  //==========================================================
 
-  Future<List<dynamic>> getSellerOrders() async {
+  Future<List<Map<String, dynamic>>> getSellerOrders() async {
   final user = supabase.auth.currentUser;
 
-  final data = await supabase
+  if (user == null) {
+    throw Exception("Belum Login");
+  }
+
+  // ==========================================
+  // AMBIL ORDER ITEM MILIK SELLER
+  // ==========================================
+
+  final items = await supabase
       .from("order_items")
       .select("""
         *,
-        orders(*)
+        products(
+          id,
+          nama_produk,
+          image_url
+        )
       """)
-      .eq("seller_id", user!.id);
+      .eq("seller_id", user.id)
+      .order(
+        "created_at",
+        ascending: false,
+      );
 
-  print("====================");
-  print(data);
-  print("====================");
+  if (items.isEmpty) {
+    return [];
+  }
 
-  return data;
+  // ==========================================
+  // AMBIL SEMUA ORDER ID
+  // ==========================================
+
+  final orderIds = items
+      .map((e) => e["order_id"])
+      .toSet()
+      .toList();
+
+  // ==========================================
+  // AMBIL DATA ORDER
+  // ==========================================
+
+  final orders = await supabase
+      .from("orders")
+      .select()
+      .inFilter("id", orderIds);
+    print("ORDER IDS");
+print(orderIds);
+
+print("ORDERS");
+print(orders);
+
+  // ==========================================
+  // GABUNGKAN ORDER KE ITEM
+  // ==========================================
+
+  final List<Map<String, dynamic>> result = [];
+
+  for (final item in items) {
+    Map<String, dynamic>? order;
+
+    try {
+      order = orders.firstWhere(
+        (e) => e["id"] == item["order_id"],
+      );
+    } catch (_) {
+      order = null;
+    }
+
+    result.add({
+      ...Map<String, dynamic>.from(item),
+      "orders": order,
+    });
+  }
+
+  print("=========== SELLER ORDER ===========");
+
+  for (final item in result) {
+    print(item["orders"]);
+  }
+
+  print("====================================");
+
+  return result;
 }
 
-  // ===================================
+  //==========================================================
   // DETAIL ORDER
-  // ===================================
+  //==========================================================
 
   Future<Map<String, dynamic>> getOrderDetail(
     String orderId,
   ) async {
-    return await supabase
+    final data = await supabase
         .from("orders")
         .select()
         .eq(
@@ -87,11 +160,13 @@ class OrderService {
           orderId,
         )
         .single();
+
+    return Map<String, dynamic>.from(data);
   }
 
-  // ===================================
-  // UPDATE PAID
-  // ===================================
+  //==========================================================
+  // MARK AS PAID
+  //==========================================================
 
   Future<void> markAsPaid(
     String orderId,
@@ -101,6 +176,8 @@ class OrderService {
         .update({
           "payment_status": "paid",
           "order_status": "processed",
+          "paid_at":
+              DateTime.now().toIso8601String(),
         })
         .eq(
           "id",
@@ -108,21 +185,16 @@ class OrderService {
         );
   }
 
-  // ===================================
+  //==========================================================
   // KIRIM PESANAN
-  // ===================================
+  //==========================================================
 
   Future<void> shipOrder(
     String orderId,
   ) async {
-    final order = await supabase
-        .from("orders")
-        .select()
-        .eq(
-          "id",
-          orderId,
-        )
-        .single();
+    final order = await getOrderDetail(
+      orderId,
+    );
 
     await supabase
         .from("orders")
@@ -141,25 +213,20 @@ class OrderService {
       userId: order["buyer_id"],
       title: "Pesanan Dikirim",
       message:
-          "Pesanan Anda sedang dalam perjalanan.",
+          "Pesanan Anda sedang dikirim.",
     );
   }
 
-  // ===================================
-  // KONFIRMASI DITERIMA
-  // ===================================
+  //==========================================================
+  // PESANAN DITERIMA
+  //==========================================================
 
   Future<void> confirmReceived(
     String orderId,
   ) async {
-    final order = await supabase
-        .from("orders")
-        .select()
-        .eq(
-          "id",
-          orderId,
-        )
-        .single();
+    final order = await getOrderDetail(
+      orderId,
+    );
 
     await supabase
         .from("orders")

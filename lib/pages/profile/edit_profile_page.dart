@@ -143,70 +143,65 @@ class _EditProfilePageState
   }
 
   Future<void> updateProfile() async {
-    try {
-      await accountService
-          .updateProfile(
-        nama: namaC.text,
-        alamat: alamatC.text,
-        noHp: noHpC.text,
+  try {
+    await accountService.updateProfile(
+      nama: namaC.text,
+      alamat: alamatC.text,
+      noHp: noHpC.text,
+      namaUmkm: namaUmkmC.text,
+      kategoriUmkm: kategori,
+      kecamatan: kecamatanC.text,
+      kabupaten: kabupatenC.text,
+      metodePencairan: metodePencairan,
+      nomorDana: danaC.text,
+      nomorShopeepay: shopeeC.text,
+      namaBank: bankC.text,
+      nomorRekening: rekeningC.text,
+      namaPemilikRekening: pemilikRekeningC.text,
+    );
 
-        namaUmkm:
-            namaUmkmC.text,
+    if (!mounted) return;
 
-        kategoriUmkm:
-            kategori,
-
-        kecamatan:
-            kecamatanC.text,
-
-        kabupaten:
-            kabupatenC.text,
-
-        metodePencairan:
-            metodePencairan,
-
-        nomorDana:
-            danaC.text,
-
-        nomorShopeepay:
-            shopeeC.text,
-
-        namaBank:
-            bankC.text,
-
-        nomorRekening:
-            rekeningC.text,
-
-        namaPemilikRekening:
-            pemilikRekeningC
-                .text,
-      );
-
-      if (!mounted) return;
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        const SnackBar(
-          content: Text(
-            "Profile berhasil diupdate",
-          ),
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          "Profile berhasil diupdate",
         ),
-      );
+      ),
+    );
 
-      Navigator.pop(context);
-    } catch (e) {
-      ScaffoldMessenger.of(
+    await Future.delayed(
+      const Duration(milliseconds: 500),
+    );
+
+    if (!mounted) return;
+
+    // kalau masih ada halaman sebelumnya
+    if (Navigator.canPop(context)) {
+      Navigator.pop(
         context,
-      ).showSnackBar(
-        SnackBar(
-          content: Text(
-            e.toString(),
-          ),
-        ),
+        true,
+      );
+    } else {
+      // kalau tidak ada halaman sebelumnya
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        '/',
+        (route) => false,
       );
     }
+  } catch (e) {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          e.toString(),
+        ),
+      ),
+    );
   }
+}
 
   Future<void> deleteAccount() async {
     try {

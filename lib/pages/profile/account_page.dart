@@ -29,25 +29,27 @@ class AccountPage extends StatelessWidget {
         child: Column(
           children: [
             SizedBox(
-              width: double.infinity,
-              height: 50,
+  width: double.infinity,
+  height: 50,
+  child: ElevatedButton(
+    onPressed: () async {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const EditProfilePage(),
+        ),
+      );
 
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          const EditProfilePage(),
-                    ),
-                  );
-                },
+      if (!context.mounted) return;
 
-                child: const Text(
-                  "Edit Profile",
-                ),
-              ),
-            ),
+      // kalau perlu refresh nanti bisa pakai setState,
+      // tapi karena AccountPage stateless tidak perlu apa-apa
+    },
+    child: const Text(
+      "Edit Profile",
+    ),
+  ),
+),
 
             const SizedBox(height: 20),
 

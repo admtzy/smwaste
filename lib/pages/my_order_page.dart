@@ -1,82 +1,82 @@
-import 'package:flutter/material.dart';
+// import 'package:flutter/material.dart';
 
-import '../../services/order_service.dart';
+// import '../../services/order_service.dart';
 
-class MyOrdersPage
-    extends StatefulWidget {
-  const MyOrdersPage({
-    super.key,
-  });
+// class MyOrdersPage
+//     extends StatefulWidget {
+//   const MyOrdersPage({
+//     super.key,
+//   });
 
-  @override
-  State<MyOrdersPage>
-      createState() =>
-          _MyOrdersPageState();
-}
+//   @override
+//   State<MyOrdersPage>
+//       createState() =>
+//           _MyOrdersPageState();
+// }
 
-class _MyOrdersPageState
-    extends State<MyOrdersPage> {
-  final service =
-      OrderService();
+// class _MyOrdersPageState
+//     extends State<MyOrdersPage> {
+//   final service =
+//       OrderService();
 
-  List orders = [];
+//   List orders = [];
 
-  @override
-  void initState() {
-    super.initState();
+//   @override
+//   void initState() {
+//     super.initState();
 
-    loadOrders();
-  }
+//     loadOrders();
+//   }
 
-  Future<void>
-      loadOrders() async {
-    orders =
-        await service
-            .getMyOrders();
+//   Future<void>
+//       loadOrders() async {
+//     orders =
+//         await service
+//             .getMyOrders();
 
-    setState(() {});
-  }
+//     setState(() {});
+//   }
 
-  @override
-  Widget build(
-    BuildContext context,
-  ) {
-    return Scaffold(
-      appBar: AppBar(
-        title:
-            const Text(
-              'Pesanan Saya',
-            ),
-      ),
+//   @override
+//   Widget build(
+//     BuildContext context,
+//   ) {
+//     return Scaffold(
+//       appBar: AppBar(
+//         title:
+//             const Text(
+//               'Pesanan Saya',
+//             ),
+//       ),
 
-      body: ListView.builder(
-        itemCount:
-            orders.length,
+//       body: ListView.builder(
+//         itemCount:
+//             orders.length,
 
-        itemBuilder:
-            (context, index) {
-          final item =
-              orders[index];
+//         itemBuilder:
+//             (context, index) {
+//           final item =
+//               orders[index];
 
-          return Card(
-            child: ListTile(
-              title: Text(
-                item['order_status'],
-              ),
+//           return Card(
+//             child: ListTile(
+//               title: Text(
+//                 item['order_status'],
+//               ),
 
-              subtitle: Text(
-                item[
-                        'payment_status']
-                    .toString(),
-              ),
+//               subtitle: Text(
+//                 item[
+//                         'payment_status']
+//                     .toString(),
+//               ),
 
-              trailing: Text(
-                'Rp${item['grand_total']}',
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
+//               trailing: Text(
+//                 'Rp${item['grand_total']}',
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
