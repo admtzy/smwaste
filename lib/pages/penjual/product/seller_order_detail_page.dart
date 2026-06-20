@@ -14,137 +14,312 @@ class SellerOrderDetailPage extends StatefulWidget {
       _SellerOrderDetailPageState();
 }
 
-class _SellerOrderDetailPageState extends State<SellerOrderDetailPage> {
-  final orderService = OrderService();
+class _SellerOrderDetailPageState
+    extends State<SellerOrderDetailPage> {
+  final OrderService orderService =
+      OrderService();
+
   bool isLoading = false;
 
   String getStatus() {
-    final order = widget.item['orders'];
+    final order = widget.item["orders"];
 
-    if (order == null) return '-';
-
-    if (order['payment_status'] == 'pending') {
-      return 'Belum Dibayar';
+    if (order == null) {
+      return "-";
     }
 
-    if (order['payment_status'] == 'paid' &&
-        order['order_status'] == 'pending') {
-      return 'Siap Dikirim';
+    if (order["payment_status"] ==
+        "pending") {
+      return "Belum Dibayar";
     }
 
-    if (order['order_status'] == 'shipped') {
-      return 'Sedang Dikirim';
+    if (order["payment_status"] ==
+            "paid" &&
+        order["order_status"] ==
+            "processed") {
+      return "Siap Dikirim";
     }
 
-    if (order['order_status'] == 'completed') {
-      return 'Selesai';
+    if (order["order_status"] ==
+        "shipped") {
+      return "Sedang Dikirim";
     }
 
-    return '-';
+    if (order["order_status"] ==
+        "completed") {
+      return "Selesai";
+    }
+
+    return "-";
   }
 
   @override
   Widget build(BuildContext context) {
     final item = widget.item;
-    final order = item['orders'];
+
+    final order = item["orders"];
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Detail Pesanan'),
+        title: const Text(
+          "Detail Pesanan",
+        ),
       ),
+
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding:
+            const EdgeInsets.all(16),
+
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              CrossAxisAlignment.start,
+
           children: [
 
-            if (item['image_url'] != null)
+            /// FOTO
+            if ((item["image_url"] ??
+                    "")
+                .toString()
+                .isNotEmpty)
               Center(
                 child: Image.network(
-                  item['image_url'],
+                  item["image_url"],
                   height: 180,
+                  fit: BoxFit.cover,
                 ),
               ),
 
-            const SizedBox(height: 20),
+            const SizedBox(
+              height: 20,
+            ),
+
+            /// =======================
+            /// PRODUK
+            /// =======================
 
             const Text(
-              'Informasi Produk',
+              "Informasi Produk",
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontWeight:
+                    FontWeight.bold,
               ),
             ),
+
             const Divider(),
 
-            Text('Nama Produk : ${item['nama_produk'] ?? '-'}'),
-            Text('Qty : ${item['qty']}'),
-            Text('Harga : Rp ${item['harga']}'),
-            Text('Subtotal : Rp ${item['subtotal']}'),
+            Text(
+              "Nama Produk : ${item["nama_produk"] ?? "-"}",
+            ),
 
-            const SizedBox(height: 20),
+            Text(
+              "Qty : ${item["qty"] ?? 0}",
+            ),
+
+            Text(
+              "Harga : Rp ${item["harga"] ?? 0}",
+            ),
+
+            Text(
+              "Subtotal : Rp ${item["subtotal"] ?? 0}",
+            ),
+
+            const SizedBox(
+              height: 20,
+            ),
+
+            /// =======================
+            /// ORDER
+            /// =======================
 
             const Text(
-              'Informasi Pesanan',
+              "Informasi Pesanan",
               style: TextStyle(
                 fontSize: 18,
-                fontWeight: FontWeight.bold,
+                fontWeight:
+                    FontWeight.bold,
               ),
             ),
+
             const Divider(),
 
-            Text('Order ID : ${order?['id'] ?? '-'}'),
-            Text('Status : ${getStatus()}'),
-            Text('Payment : ${order?['payment_status'] ?? '-'}'),
-            Text('Order Status : ${order?['order_status'] ?? '-'}'),
+            Text(
+              "Order ID : ${order?["id"] ?? "-"}",
+            ),
 
-            const SizedBox(height: 20),
+            Text(
+              "Status : ${getStatus()}",
+            ),
 
-            if (order != null && order['kurir'] != null)
-              Text('Kurir : ${order['kurir']}'),
+            Text(
+              "Payment : ${order?["payment_status"] ?? "-"}",
+            ),
 
-            if (order != null && order['nomor_resi'] != null)
-              Text('Resi : ${order['nomor_resi']}'),
+            Text(
+              "Order Status : ${order?["order_status"] ?? "-"}",
+            ),
 
-            const SizedBox(height: 20),
+            const SizedBox(
+              height: 12,
+            ),
 
-            /// =========================
-            /// BUTTON KIRIM BARANG
-            /// =========================
+            if ((order?["kurir"] ??
+                    "")
+                .toString()
+                .isNotEmpty)
+              Text(
+                "Kurir : ${order["kurir"]}",
+              ),
+
+            if ((order?["nomor_resi"] ??
+                    "")
+                .toString()
+                .isNotEmpty)
+              Text(
+                "Nomor Resi : ${order["nomor_resi"]}",
+              ),
+
+            const SizedBox(
+              height: 25,
+            ),
+
+            /// =======================
+            /// BUTTON KIRIM
+            /// =======================
+
             if (order != null &&
-                order['payment_status'] == 'paid' &&
-                order['order_status'] == 'pending')
+                order["payment_status"] ==
+                    "paid" &&
+                order["order_status"] ==
+                    "processed")
               SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: isLoading
-                      ? null
-                      : () async {
-                          setState(() => isLoading = true);
+                width:
+                    double.infinity,
 
-                          try {
-                            await orderService.shipOrder(order['id']);
+                height: 50,
 
-                            if (!mounted) return;
+                child:
+                    ElevatedButton(
+                  onPressed:
+                      isLoading
+                          ? null
+                          : () async {
+                              setState(() {
+                                isLoading =
+                                    true;
+                              });
 
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Pesanan berhasil dikirim'),
-                              ),
-                            );
+                              try {
+                                await orderService
+                                    .shipOrder(
+                                  order["id"],
+                                );
 
-                            Navigator.pop(context, true);
-                          } catch (e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(e.toString())),
-                            );
-                          }
+                                if (!mounted) {
+                                  return;
+                                }
 
-                          if (mounted) {
-                            setState(() => isLoading = false);
-                          }
-                        },
-                  child: const Text('Kirim Barang'),
+                                ScaffoldMessenger.of(
+                                        context)
+                                    .showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                        Text(
+                                      "Pesanan berhasil dikirim",
+                                    ),
+                                  ),
+                                );
+
+                                Navigator.pop(
+                                  context,
+                                  true,
+                                );
+                              } catch (e) {
+                                ScaffoldMessenger.of(
+                                        context)
+                                    .showSnackBar(
+                                  SnackBar(
+                                    content:
+                                        Text(
+                                      e.toString(),
+                                    ),
+                                  ),
+                                );
+                              }
+
+                              if (mounted) {
+                                setState(() {
+                                  isLoading =
+                                      false;
+                                });
+                              }
+                            },
+
+                  child: isLoading
+                      ? const CircularProgressIndicator()
+                      : const Text(
+                          "Kirim Barang",
+                        ),
+                ),
+              ),
+
+            if (order != null &&
+                order["order_status"] ==
+                    "shipped")
+              Container(
+                width:
+                    double.infinity,
+                padding:
+                    const EdgeInsets.all(
+                  12,
+                ),
+                decoration:
+                    BoxDecoration(
+                  color: Colors.green
+                      .shade100,
+                  borderRadius:
+                      BorderRadius.circular(
+                    10,
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    "Pesanan sedang dikirim",
+                    style: TextStyle(
+                      fontWeight:
+                          FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+
+            if (order != null &&
+                order["order_status"] ==
+                    "completed")
+              Container(
+                width:
+                    double.infinity,
+                padding:
+                    const EdgeInsets.all(
+                  12,
+                ),
+                decoration:
+                    BoxDecoration(
+                  color: Colors.blue
+                      .shade100,
+                  borderRadius:
+                      BorderRadius.circular(
+                    10,
+                  ),
+                ),
+                child: const Center(
+                  child: Text(
+                    "Pesanan telah selesai",
+                    style: TextStyle(
+                      fontWeight:
+                          FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
           ],

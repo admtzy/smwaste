@@ -1,37 +1,71 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class MidtransService {
-  final supabase =
+  final SupabaseClient supabase =
       Supabase.instance.client;
 
-  Future<Map<String, dynamic>>
-      createPayment({
+  // ===================================
+  // CREATE PAYMENT
+  // ===================================
+
+  Future<Map<String, dynamic>> createPayment({
     required String orderId,
     required int amount,
   }) async {
-    final response =
-        await supabase.functions.invoke(
-      'rapid-action',
-      body: {
-        'order_id': orderId,
-        'amount': amount,
-      },
-    );
+    try {
+      print("==================================");
+      print("CREATE PAYMENT");
+      print("ORDER ID : $orderId");
+      print("AMOUNT : $amount");
 
-    print(
-      '===== MIDTRANS RESPONSE =====',
-    );
-
-    print(response.data);
-
-    if (response.data == null) {
-      throw Exception(
-        'Response dari function kosong',
+      final response =
+          await supabase.functions.invoke(
+        "rapid-action",
+        body: {
+          "order_id": orderId,
+          "amount": amount,
+        },
       );
-    }
 
-    return Map<String, dynamic>.from(
-      response.data,
-    );
+      print("HTTP STATUS : ${response.status}");
+      print("DATA : ${response.data}");
+
+      if (response.data == null) {
+        throw Exception("Response kosong");
+      }
+
+      return Map<String, dynamic>.from(
+        response.data,
+      );
+    } catch (e, s) {
+      print("ERROR CREATE PAYMENT");
+      print(e);
+      print(s);
+
+      rethrow;
+    }
   }
+
+  // ===================================
+  // CEK STATUS PEMBAYARAN
+  // ===================================
+
+Future<Map<String, dynamic>>
+    checkPaymentStatus(
+  String orderId,
+) async {
+  final response =
+      await supabase.functions.invoke(
+    "cek-payment",
+    body: {
+      "order_id": orderId,
+    },
+  );
+
+  print(response.data);
+
+  return Map<String, dynamic>.from(
+    response.data,
+  );
+}
 }

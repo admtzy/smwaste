@@ -42,7 +42,7 @@ class ProductService {
     final data = await supabase
         .from('products')
         .select()
-        .eq('user_id', user.id);
+        .eq('seller_id', user.id);
 
     return data;
   }
@@ -163,7 +163,7 @@ class ProductService {
       await supabase
           .from('products')
           .insert({
-        'user_id': user.id,
+        'seller_id': user.id,
 
         'nama_produk':
             namaProduk,

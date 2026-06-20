@@ -2,161 +2,183 @@ import 'package:smwaste/services/notification_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OrderService {
-  final supabase =
-      Supabase.instance.client;
+  final supabase = Supabase.instance.client;
 
-  Future<List<dynamic>>
-      getMyOrders() async {
-    final user =
-        supabase.auth.currentUser;
+  // ===================================
+  // ORDER PEMBELI
+  // ===================================
+
+  Future<List<dynamic>> getMyOrders() async {
+    final user = supabase.auth.currentUser;
 
     if (user == null) {
-      throw Exception(
-        'User belum login',
-      );
+      throw Exception("User belum login");
     }
 
     return await supabase
-        .from('orders')
+        .from("orders")
         .select()
         .eq(
-          'buyer_id',
+          "buyer_id",
           user.id,
         )
         .order(
-          'created_at',
+          "created_at",
           ascending: false,
         );
   }
+
+  // ===================================
+  // ITEM ORDER
+  // ===================================
 
   Future<List<dynamic>> getOrderItems(
     String orderId,
   ) async {
     return await supabase
-        .from('order_items')
-        .select('''
+        .from("order_items")
+        .select("""
           *,
           products(
             nama_produk,
             image_url
           )
-        ''')
+        """)
         .eq(
-          'order_id',
+          "order_id",
           orderId,
         );
   }
-  
-  Future<List<dynamic>>
-      getSellerOrders() async {
 
-    final user =
-        supabase.auth.currentUser;
+  // ===================================
+  // ORDER PENJUAL
+  // ===================================
 
-    if (user == null) {
-      throw Exception(
-        'User belum login',
-      );
-    }
+  Future<List<dynamic>> getSellerOrders() async {
+  final user = supabase.auth.currentUser;
 
-    final data =
-        await supabase
-            .from('order_items')
-            .select('''
-              *,
-              orders(*)
-            ''')
-            .eq(
-              'seller_id',
-              user.id,
-            )
-            .order(
-              'id',
-              ascending: false,
-            );
+  final data = await supabase
+      .from("order_items")
+      .select("""
+        *,
+        orders(*)
+      """)
+      .eq("seller_id", user!.id);
 
-    return data;
-  }
+  print("====================");
+  print(data);
+  print("====================");
 
-  Future<void> shipOrder(
-    String orderId,
-  ) async {
+  return data;
+}
 
-    final order =
-        await supabase
-            .from('orders')
-            .select()
-            .eq(
-              'id',
-              orderId,
-            )
-            .single();
+  // ===================================
+  // DETAIL ORDER
+  // ===================================
 
-    await supabase
-        .from('orders')
-        .update({
-          'order_status':
-              'shipped',
-        })
-        .eq(
-          'id',
-          orderId,
-        );
-
-    await NotificationService()
-        .createNotification(
-      userId:
-          order['buyer_id'],
-
-      title:
-          'Pesanan Dikirim',
-
-      message:
-          'Pesanan Anda sedang dalam perjalanan.',
-    );
-  }
-
-  Future<Map<String, dynamic>>
-      getOrderDetail(
+  Future<Map<String, dynamic>> getOrderDetail(
     String orderId,
   ) async {
     return await supabase
-        .from('orders')
+        .from("orders")
         .select()
         .eq(
-          'id',
+          "id",
           orderId,
         )
         .single();
   }
 
-  Future<void> markAsPaid(String orderId) async {
-    await supabase
-        .from('orders')
-        .update({
-          'payment_status': 'paid',
-          'order_status': 'pending',
-        })
-        .eq('id', orderId);
-  }
+  // ===================================
+  // UPDATE PAID
+  // ===================================
 
-  Future<void>
-      confirmReceived(
+  Future<void> markAsPaid(
     String orderId,
   ) async {
     await supabase
-        .from('orders')
+        .from("orders")
         .update({
-      'order_status':
-          'completed',
-
-      'completed_at':
-          DateTime.now()
-              .toIso8601String(),
-    })
+          "payment_status": "paid",
+          "order_status": "processed",
+        })
         .eq(
-      'id',
-      orderId,
+          "id",
+          orderId,
+        );
+  }
+
+  // ===================================
+  // KIRIM PESANAN
+  // ===================================
+
+  Future<void> shipOrder(
+    String orderId,
+  ) async {
+    final order = await supabase
+        .from("orders")
+        .select()
+        .eq(
+          "id",
+          orderId,
+        )
+        .single();
+
+    await supabase
+        .from("orders")
+        .update({
+          "order_status": "shipped",
+          "shipped_at":
+              DateTime.now().toIso8601String(),
+        })
+        .eq(
+          "id",
+          orderId,
+        );
+
+    await NotificationService()
+        .createNotification(
+      userId: order["buyer_id"],
+      title: "Pesanan Dikirim",
+      message:
+          "Pesanan Anda sedang dalam perjalanan.",
+    );
+  }
+
+  // ===================================
+  // KONFIRMASI DITERIMA
+  // ===================================
+
+  Future<void> confirmReceived(
+    String orderId,
+  ) async {
+    final order = await supabase
+        .from("orders")
+        .select()
+        .eq(
+          "id",
+          orderId,
+        )
+        .single();
+
+    await supabase
+        .from("orders")
+        .update({
+          "order_status": "completed",
+          "completed_at":
+              DateTime.now().toIso8601String(),
+        })
+        .eq(
+          "id",
+          orderId,
+        );
+
+    await NotificationService()
+        .createNotification(
+      userId: order["buyer_id"],
+      title: "Pesanan Selesai",
+      message:
+          "Terima kasih telah berbelanja.",
     );
   }
 }

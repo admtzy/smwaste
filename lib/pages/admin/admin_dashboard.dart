@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smwaste/pages/admin/admin_product_page.dart';
-// import 'package:smwaste/pages/admin/manage_users_page.dart';
-
+import 'package:smwaste/pages/admin/admin_order_page.dart';
 import 'manage_users_page.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -14,10 +13,11 @@ class AdminDashboard extends StatefulWidget {
 class _AdminDashboardState extends State<AdminDashboard> {
   int currentIndex = 0;
 
-  final pages = [
+  final List<Widget> pages = [
     const AdminHomePage(),
     const ManageUsersPage(),
     const AdminProductPage(),
+    const AdminOrderPage(), // ✅ Riwayat Transaksi
     const AdminProfilePage(),
   ];
 
@@ -43,22 +43,27 @@ class _AdminDashboardState extends State<AdminDashboard> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            label: 'Home',
+            label: "Home",
           ),
 
           BottomNavigationBarItem(
             icon: Icon(Icons.group),
-            label: 'Users',
+            label: "Users",
           ),
-          
+
           BottomNavigationBarItem(
-            icon: Icon(Icons.inventory_2), // ✅ PRODUCT ICON
-            label: 'Products',
+            icon: Icon(Icons.inventory_2),
+            label: "Products",
+          ),
+
+          BottomNavigationBarItem(
+            icon: Icon(Icons.receipt_long),
+            label: "Orders",
           ),
 
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
-            label: 'Profile',
+            label: "Profile",
           ),
         ],
       ),

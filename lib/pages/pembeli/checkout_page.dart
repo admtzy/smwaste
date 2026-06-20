@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:smwaste/payment_page.dart';
 
 import '../../services/checkout_service.dart';
+// import '../payment/payment_page.dart';
 
 class CheckoutPage extends StatefulWidget {
   final int totalProduk;
@@ -30,88 +31,95 @@ class _CheckoutPageState
   bool isLoading = false;
 
   // =========================
-  // OPEN MIDTRANS
-  // =========================
-
-  Future<void> openPayment(
-    String url,
-  ) async {
-    final Uri uri = Uri.parse(url);
-
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(
-        uri,
-        mode:
-            LaunchMode
-                .externalApplication,
-      );
-    } else {
-      throw Exception(
-        'Gagal membuka halaman pembayaran',
-      );
-    }
-  }
-
-  // =========================
   // CHECKOUT
   // =========================
 
-  Future<void>
-      prosesCheckout() async {
+  Future<void> prosesCheckout() async {
     try {
       setState(() {
         isLoading = true;
       });
 
       final result =
-          await checkoutService
-              .checkout();
+          await checkoutService.checkout();
 
       final String orderId =
-          result['order_id']
-                  ?.toString() ??
-              '';
+          result["order_id"]?.toString() ??
+              "";
 
       final String token =
-          result['token']
-                  ?.toString() ??
-              '';
+          result["token"]?.toString() ??
+              "";
 
       final String redirectUrl =
-          result['redirect_url']
+          result["redirect_url"]
                   ?.toString() ??
-              '';
+              "";
+
+      debugPrint(
+        "================================",
+      );
+      debugPrint("CHECKOUT BERHASIL");
+      debugPrint("ORDER ID : $orderId");
+      debugPrint("TOKEN : $token");
+      debugPrint(
+        "REDIRECT URL : $redirectUrl",
+      );
+      debugPrint(
+        "================================",
+      );
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(
+      if (redirectUrl.isEmpty) {
+        throw Exception(
+          "URL pembayaran kosong",
+        );
+      }
+
+      // =========================
+      // PINDAH KE PAYMENT PAGE
+      // =========================
+
+      final resultPayment =
+          await Navigator.push(
         context,
-      ).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Order berhasil dibuat\n$orderId',
+        MaterialPageRoute(
+          builder: (_) => PaymentPage(
+            paymentUrl: redirectUrl,
+            orderId: orderId,
           ),
         ),
       );
 
       debugPrint(
-        'TOKEN : $token',
+        "HASIL DARI PAYMENT PAGE = $resultPayment",
       );
 
-      debugPrint(
-        'URL : $redirectUrl',
-      );
-
-      if (redirectUrl.isNotEmpty) {
-        await openPayment(
-          redirectUrl,
+      if (resultPayment == true &&
+          mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Pembayaran berhasil",
+            ),
+          ),
         );
-      } else {
-        throw Exception(
-          'URL pembayaran kosong',
+
+        Navigator.pop(
+          context,
+          true,
         );
       }
-    } catch (e) {
+    } catch (e, s) {
+      debugPrint(
+        "ERROR CHECKOUT",
+      );
+      debugPrint(e.toString());
+      debugPrint(s.toString());
+
       if (!mounted) return;
 
       ScaffoldMessenger.of(
@@ -138,62 +146,54 @@ class _CheckoutPageState
   ) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text(
-          'Checkout',
+        title: const Text(
+          "Checkout",
         ),
       ),
       body: Padding(
         padding:
-            const EdgeInsets.all(
-          16,
-        ),
+            const EdgeInsets.all(16),
         child: Column(
           children: [
             ListTile(
-              title:
-                  const Text(
-                'Total Produk',
+              title: const Text(
+                "Total Produk",
               ),
               trailing: Text(
-                'Rp ${widget.totalProduk}',
+                "Rp ${widget.totalProduk}",
               ),
             ),
 
             ListTile(
-              title:
-                  const Text(
-                'Ongkir',
+              title: const Text(
+                "Ongkir",
               ),
               trailing: Text(
-                'Rp ${widget.totalOngkir}',
+                "Rp ${widget.totalOngkir}",
               ),
             ),
 
             ListTile(
-              title:
-                  const Text(
-                'Admin Fee',
+              title: const Text(
+                "Admin Fee",
               ),
               trailing: Text(
-                'Rp ${widget.adminFee}',
+                "Rp ${widget.adminFee}",
               ),
             ),
 
             const Divider(),
 
             ListTile(
-              title:
-                  const Text(
-                'Grand Total',
+              title: const Text(
+                "Grand Total",
               ),
               trailing: Text(
-                'Rp ${widget.grandTotal}',
+                "Rp ${widget.grandTotal}",
                 style:
                     const TextStyle(
                   fontWeight:
-                      FontWeight
-                          .bold,
+                      FontWeight.bold,
                 ),
               ),
             ),
@@ -201,28 +201,18 @@ class _CheckoutPageState
             const Spacer(),
 
             SizedBox(
-              width:
-                  double.infinity,
+              width: double.infinity,
               height: 50,
-              child:
-                  ElevatedButton(
+              child: ElevatedButton(
                 onPressed:
                     isLoading
                         ? null
                         : prosesCheckout,
-                child:
-                    isLoading
-                        ? const SizedBox(
-                            width:
-                                20,
-                            height:
-                                20,
-                            child:
-                                CircularProgressIndicator(),
-                          )
-                        : const Text(
-                            'Bayar Sekarang',
-                          ),
+                child: isLoading
+                    ? const CircularProgressIndicator()
+                    : const Text(
+                        "Bayar Sekarang",
+                      ),
               ),
             ),
           ],

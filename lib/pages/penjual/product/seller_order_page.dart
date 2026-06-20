@@ -72,7 +72,7 @@ class _SellerOrderPageState
     if (order['payment_status'] ==
             'paid' &&
         order['order_status'] ==
-            'pending') {
+            'processed') {
       return 'Siap Dikirim';
     }
 

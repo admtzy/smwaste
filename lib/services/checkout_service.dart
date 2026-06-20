@@ -229,7 +229,7 @@ class CheckoutService {
             item['products'];
 
         final String sellerId =
-            product['user_id'];
+            product['seller_id'];
 
         final int harga =
             (product['harga'] ??

@@ -248,10 +248,10 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                       items: const [
-                        DropdownMenuItem(
-                          value: 'admin',
-                          child: Text('Admin'),
-                        ),
+                        // DropdownMenuItem(
+                        //   value: 'admin',
+                        //   child: Text('Admin'),
+                        // ),
                         DropdownMenuItem(
                           value: 'penjual',
                           child: Text('Penjual'),
