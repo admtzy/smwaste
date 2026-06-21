@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../services/checkout_service.dart';
 import '../services/midtrans_service.dart';
 
 class PaymentPage extends StatefulWidget {
@@ -72,73 +73,46 @@ class _PaymentPageState
         .showSnackBar(
       const SnackBar(
         content: Text(
-          "Selesaikan pembayaran lalu kembali ke aplikasi dan tekan Cek Status.",
+          "Selesaikan pembayaran lalu kembali ke aplikasi dan tekan Lihat Bukti Pembayaran.",
         ),
       ),
     );
   }
 
   //---------------------------------
-  // CEK STATUS
+  // CEK BUKTI PEMBAYARAN
   //---------------------------------
 
-  Future<void> cekStatus() async {
-    setState(() {
-      loading = true;
-    });
-
+  Future<void> cekBuktiPembayaran() async {
     try {
-      final result =
-          await midtransService
-              .checkPaymentStatus(
+      setState(() {
+        loading = true;
+      });
+
+      await CheckoutService()
+          .checkPaymentStatus(
         widget.orderId,
       );
 
-      debugPrint(
-        result.toString(),
+      if (!mounted) return;
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(
+        const SnackBar(
+          content: Text(
+            "Pembayaran berhasil",
+          ),
+        ),
       );
 
-      final status =
-          result["transaction_status"]
-                  ?.toString() ??
-              "";
-
-      debugPrint(
-        "STATUS = $status",
+      Navigator.pop(
+        context,
+        true,
       );
-
-      if (status ==
-              "settlement" ||
-          status == "capture" ||
-          status == "paid") {
-        if (!mounted) return;
-
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "Pembayaran berhasil",
-            ),
-          ),
-        );
-
-        Navigator.pop(
-          context,
-          true,
-        );
-      } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
-          SnackBar(
-            content: Text(
-              "Status pembayaran : $status",
-            ),
-          ),
-        );
-      }
     } catch (e) {
+      if (!mounted) return;
+
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(
@@ -148,11 +122,13 @@ class _PaymentPageState
           ),
         ),
       );
+    } finally {
+      if (mounted) {
+        setState(() {
+          loading = false;
+        });
+      }
     }
-
-    setState(() {
-      loading = false;
-    });
   }
 
   //---------------------------------
@@ -179,13 +155,17 @@ class _PaymentPageState
                 MainAxisAlignment
                     .center,
             children: [
+
+              //---------------------------------
+              // BAYAR SEKARANG
+              //---------------------------------
+
               SizedBox(
                 width:
                     double.infinity,
                 child:
                     ElevatedButton(
-                  onPressed:
-                      bayar,
+                  onPressed: bayar,
                   child:
                       const Text(
                     "Bayar Sekarang",
@@ -197,6 +177,10 @@ class _PaymentPageState
                 height: 20,
               ),
 
+              //---------------------------------
+              // LIHAT BUKTI PEMBAYARAN
+              //---------------------------------
+
               SizedBox(
                 width:
                     double.infinity,
@@ -205,13 +189,12 @@ class _PaymentPageState
                   onPressed:
                       loading
                           ? null
-                          : cekStatus,
-                  child:
-                      loading
-                          ? const CircularProgressIndicator()
-                          : const Text(
-                              "Cek Status Pembayaran",
-                            ),
+                          : cekBuktiPembayaran,
+                  child: Text(
+                    loading
+                        ? "Loading..."
+                        : "Pembayaran Selesai",
+                  ),
                 ),
               ),
             ],

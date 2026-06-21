@@ -131,6 +131,27 @@ class CheckoutService {
     }
   }
 
+  Future<void> checkPaymentStatus(
+  String orderId,
+) async {
+  try {
+    final result = await MidtransService()
+        .checkPaymentStatus(orderId);
+
+    final status =
+        result["transaction_status"];
+
+    if (status == "settlement" ||
+        status == "capture") {
+      await markOrderPaid(orderId);
+    }
+  } catch (e) {
+    throw Exception(
+      "Gagal cek pembayaran: $e",
+    );
+  }
+}
+
   // ===================================
   // CHECKOUT
   // ===================================

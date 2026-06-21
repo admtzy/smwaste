@@ -41,9 +41,6 @@ class AccountPage extends StatelessWidget {
       );
 
       if (!context.mounted) return;
-
-      // kalau perlu refresh nanti bisa pakai setState,
-      // tapi karena AccountPage stateless tidak perlu apa-apa
     },
     child: const Text(
       "Edit Profile",

@@ -136,6 +136,8 @@ class ProductService {
     }
   }
 
+
+
   // =========================
   // ADD PRODUCT
   // =========================
@@ -160,33 +162,17 @@ class ProductService {
         );
       }
 
-      await supabase
-          .from('products')
-          .insert({
-        'seller_id': user.id,
-
-        'nama_produk':
-            namaProduk,
-
-        'deskripsi':
-            deskripsi,
-
-        'harga': harga,
-
-        'stok': stok,
-
-        'kategori':
-            kategori,
-
-        'image_url':
-            imageUrl,
-
-        'latitude':
-            latitude,
-
-        'longitude':
-            longitude,
-      });
+await supabase.from('products').insert({
+  'seller_id': user.id,
+  'nama_produk': namaProduk,
+  'deskripsi': deskripsi,
+  'harga': harga,
+  'stok': stok,
+  'kategori': kategori,
+  'image_url': imageUrl,
+  'latitude': latitude,
+  'longitude': longitude,
+});
     } catch (e) {
       throw Exception(
         'Tambah produk gagal: $e',
@@ -199,13 +185,13 @@ class ProductService {
   // =========================
 
   Future<void> updateProduct({
-    required String id,
-    required String namaProduk,
-    required String deskripsi,
-    required int harga,
-    required int stok,
-    required String kategori, required String kecamatan, required String kabupaten,
-  }) async {
+required String id,
+required String namaProduk,
+required String deskripsi,
+required int harga,
+required int stok,
+required String kategori,
+}) async {
     try {
       await supabase
           .from('products')

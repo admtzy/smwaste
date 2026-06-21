@@ -29,11 +29,11 @@ class _EditProductPageState
 
   late TextEditingController stokC;
 
-  late TextEditingController
-      kecamatanC;
+  // late TextEditingController
+  //     kecamatanC;
 
-  late TextEditingController
-      kabupatenC;
+  // late TextEditingController
+  //     kabupatenC;
 
   late String kategori;
 
@@ -72,19 +72,19 @@ class _EditProductPageState
               .toString(),
     );
 
-    kecamatanC =
-        TextEditingController(
-      text:
-          widget.product['kecamatan'] ??
-          '',
-    );
+    // kecamatanC =
+    //     TextEditingController(
+    //   text:
+    //       widget.product['kecamatan'] ??
+    //       '',
+    // );
 
-    kabupatenC =
-        TextEditingController(
-      text:
-          widget.product['kabupaten'] ??
-          '',
-    );
+    // kabupatenC =
+    //     TextEditingController(
+    //   text:
+    //       widget.product['kabupaten'] ??
+    //       '',
+    // );
 
     kategori =
         widget.product['kategori'] ??
@@ -100,9 +100,7 @@ class _EditProductPageState
       if (namaC.text.isEmpty ||
           deskripsiC.text.isEmpty ||
           hargaC.text.isEmpty ||
-          stokC.text.isEmpty ||
-          kecamatanC.text.isEmpty ||
-          kabupatenC.text.isEmpty) {
+          stokC.text.isEmpty) {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(
@@ -140,11 +138,11 @@ class _EditProductPageState
 
         kategori: kategori,
 
-        kecamatan:
-            kecamatanC.text.trim(),
+        // kecamatan:
+        //     kecamatanC.text.trim(),
 
-        kabupaten:
-            kabupatenC.text.trim(),
+        // kabupaten:
+        //     kabupatenC.text.trim(),
       );
 
       if (!mounted) return;
@@ -195,9 +193,9 @@ class _EditProductPageState
 
     stokC.dispose();
 
-    kecamatanC.dispose();
+    // kecamatanC.dispose();
 
-    kabupatenC.dispose();
+    // kabupatenC.dispose();
 
     super.dispose();
   }
@@ -387,45 +385,45 @@ class _EditProductPageState
                 },
               ),
 
-              const SizedBox(height: 15),
+              // const SizedBox(height: 15),
 
-              // =========================
-              // KECAMATAN
-              // =========================
+              // // =========================
+              // // KECAMATAN
+              // // =========================
 
-              TextField(
-                controller:
-                    kecamatanC,
+              // TextField(
+              //   controller:
+              //       kecamatanC,
 
-                decoration:
-                    const InputDecoration(
-                  labelText:
-                      'Kecamatan',
+              //   decoration:
+              //       const InputDecoration(
+              //     labelText:
+              //         'Kecamatan',
 
-                  border:
-                      OutlineInputBorder(),
-                ),
-              ),
+              //     border:
+              //         OutlineInputBorder(),
+              //   ),
+              // ),
 
-              const SizedBox(height: 15),
+              // const SizedBox(height: 15),
 
-              // =========================
-              // KABUPATEN
-              // =========================
+              // // =========================
+              // // KABUPATEN
+              // // =========================
 
-              TextField(
-                controller:
-                    kabupatenC,
+              // TextField(
+              //   controller:
+              //       kabupatenC,
 
-                decoration:
-                    const InputDecoration(
-                  labelText:
-                      'Kabupaten',
+              //   decoration:
+              //       const InputDecoration(
+              //     labelText:
+              //         'Kabupaten',
 
-                  border:
-                      OutlineInputBorder(),
-                ),
-              ),
+              //     border:
+              //         OutlineInputBorder(),
+              //   ),
+              // ),
 
               const SizedBox(height: 25),
 

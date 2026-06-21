@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../services/order_service.dart';
+import 'rivew_page.dart';
+import '../../services/review_service.dart';
 
 class OrderDetailPage extends StatefulWidget {
   final Map order;
@@ -18,6 +20,10 @@ class _OrderDetailPageState
     extends State<OrderDetailPage> {
   final OrderService orderService =
       OrderService();
+  final ReviewService reviewService =
+    ReviewService();
+
+bool sudahReview = false;
 
   List items = [];
 
@@ -27,6 +33,7 @@ class _OrderDetailPageState
   void initState() {
     super.initState();
     loadItems();
+    cekReview();
   }
 
   Future<void> loadItems() async {
@@ -41,6 +48,18 @@ class _OrderDetailPageState
       items = result;
     });
   }
+  Future<void> cekReview() async {
+  try {
+    sudahReview =
+        await reviewService.sudahReview(
+      widget.order["id"],
+    );
+
+    if (!mounted) return;
+
+    setState(() {});
+  } catch (_) {}
+}
 
   String getStatus() {
     final order = widget.order;
@@ -215,86 +234,105 @@ class _OrderDetailPageState
           /// BUTTON BARANG DITERIMA
           /// ========================
 
-          if (order["payment_status"] ==
-                  "paid" &&
-              order["order_status"] ==
-                  "shipped")
-            Padding(
-              padding:
-                  const EdgeInsets.all(
-                16,
+          /// ========================
+/// BUTTON BARANG DITERIMA
+/// ========================
+
+if (order["payment_status"] == "paid" &&
+    order["order_status"] == "shipped")
+  Padding(
+    padding: const EdgeInsets.all(16),
+    child: SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: loading
+            ? null
+            : () async {
+                setState(() {
+                  loading = true;
+                });
+
+                try {
+                  await orderService.confirmReceived(
+                    order["id"],
+                  );
+
+                  if (!mounted) return;
+
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        "Pesanan telah selesai",
+                      ),
+                    ),
+                  );
+
+                  Navigator.pop(
+                    context,
+                    true,
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        e.toString(),
+                      ),
+                    ),
+                  );
+                }
+
+                if (mounted) {
+                  setState(() {
+                    loading = false;
+                  });
+                }
+              },
+        child: loading
+            ? const CircularProgressIndicator()
+            : const Text(
+                "Barang Diterima",
               ),
+      ),
+    ),
+  ),
 
-              child: SizedBox(
-                width:
-                    double.infinity,
+/// ========================
+/// BUTTON REVIEW
+/// ========================
 
-                height: 50,
-
-                child:
-                    ElevatedButton(
-                  onPressed:
-                      loading
-                          ? null
-                          : () async {
-                              setState(() {
-                                loading =
-                                    true;
-                              });
-
-                              try {
-                                await orderService
-                                    .confirmReceived(
-                                  order["id"],
-                                );
-
-                                if (!mounted)
-                                  return;
-
-                                ScaffoldMessenger.of(
-                                        context)
-                                    .showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text(
-                                      "Pesanan telah selesai",
-                                    ),
-                                  ),
-                                );
-
-                                Navigator.pop(
-                                  context,
-                                  true,
-                                );
-                              } catch (e) {
-                                ScaffoldMessenger.of(
-                                        context)
-                                    .showSnackBar(
-                                  SnackBar(
-                                    content:
-                                        Text(
-                                      e.toString(),
-                                    ),
-                                  ),
-                                );
-                              }
-
-                              if (mounted) {
-                                setState(() {
-                                  loading =
-                                      false;
-                                });
-                              }
-                            },
-
-                  child: loading
-                      ? const CircularProgressIndicator()
-                      : const Text(
-                          "Barang Diterima",
-                        ),
-                ),
+if (order["order_status"] == "completed" &&
+    !sudahReview &&
+    items.isNotEmpty)
+  Padding(
+    padding: const EdgeInsets.all(16),
+    child: SizedBox(
+      width: double.infinity,
+      height: 50,
+      child: ElevatedButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ReviewPage(
+                productId: items.first["product_id"],
+                orderId: order["id"],
               ),
             ),
+          );
+
+          if (result == true) {
+            cekReview();
+          }
+        },
+        child: const Text(
+          "Beri Penilaian",
+        ),
+      ),
+    ),
+  ),
         ],
       ),
     );

@@ -30,10 +30,6 @@ class AdminOrderService {
       """)
         .order("created_at", ascending: false);
 
-    print("====================");
-    print(data);
-    print("====================");
-
     return data;
   }
 }

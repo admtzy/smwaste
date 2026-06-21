@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smwaste/services/product_service.dart';
+import '../../../services/review_service.dart';
 
 class AdminProductPage extends StatefulWidget {
   const AdminProductPage({super.key});
@@ -10,6 +11,8 @@ class AdminProductPage extends StatefulWidget {
 
 class _AdminProductPageState extends State<AdminProductPage> {
   final ProductService _service = ProductService();
+  final ReviewService reviewService =
+    ReviewService();
 
   List<dynamic> products = [];
   bool isLoading = true;
@@ -77,72 +80,196 @@ class _AdminProductPageState extends State<AdminProductPage> {
           ),
         ),
         builder: (_) {
-          return Container(
-            color: Colors.white,
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-            child: Wrap(
-              children: [
-                // Garis penanda handle BottomSheet di bagian atas tengah
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 5,
-                    margin: const EdgeInsets.only(bottom: 24),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
+          return DraggableScrollableSheet(
+            initialChildSize: 0.7, // Tinggi awal saat dibuka (70% layar)
+            minChildSize: 0.5,     // Tinggi minimal
+            maxChildSize: 0.95,    // Tinggi maksimal saat di-scroll mentok atas
+            expand: false,
+            builder: (_, scrollController) {
+              return Container(
+                color: Colors.white,
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: SingleChildScrollView(
+                  controller: scrollController, // Menghubungkan scroll dengan bottom sheet
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Garis penanda handle BottomSheet di bagian atas tengah
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 5,
+                          margin: const EdgeInsets.only(bottom: 24),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+
+                      // IMAGE
+                      if (data['image_url'] != null && data['image_url'] != '')
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.network(
+                            data['image_url'],
+                            height: 220,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      else
+                        Container(
+                          height: 150,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: const Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
+                        ),
+
+                      const SizedBox(height: 16, width: double.infinity),
+
+                      // NAME
+                      Text(
+                        data['nama_produk'] ?? '-',
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 12),
+                        child: Divider(),
+                      ),
+
+                      // INFO LIST
+                      _buildDetailRow(Icons.monetization_on_outlined, 'Harga', 'Rp ${data['harga']}'),
+                      _buildDetailRow(Icons.layers_outlined, 'Stok', '${data['stok']} unit'),
+                      _buildDetailRow(Icons.category_outlined, 'Kategori', '${data['kategori']}'),
+                      _buildDetailRow(Icons.description_outlined, 'Deskripsi', '${data['deskripsi'] ?? '-'}'),
+                      _buildDetailRow(Icons.location_on_outlined, 'Latitude', '${data['latitude'] ?? '-'}'),
+                      _buildDetailRow(Icons.location_on_outlined, 'Longitude', '${data['longitude'] ?? '-'}'),
+                      const SizedBox(height: 20),
+
+                      const Text(
+                        "Rating Produk",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      FutureBuilder(
+  future: reviewService.getRatingInfo(
+    data["id"],
+  ),
+  builder: (context, snapshot) {
+    if (!snapshot.hasData) {
+      return const SizedBox();
+    }
+
+    final rating =
+        snapshot.data as Map<String, dynamic>;
+
+    return Row(
+      children: [
+        const Icon(
+          Icons.star,
+          color: Colors.amber,
+        ),
+
+        const SizedBox(width: 5),
+
+        Text(
+          rating["average"]
+              .toStringAsFixed(1),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        const SizedBox(width: 5),
+
+        Text(
+          "(${rating["count"]} ulasan)",
+        ),
+      ],
+    );
+  },
+),
+
+                      const SizedBox(height: 20),
+
+                      const Text(
+                        "Ulasan Pembeli",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      FutureBuilder(
+                        future: reviewService.getReviews(
+                          data["id"],
+                        ),
+                        builder: (context, snapshot) {
+                          if (!snapshot.hasData) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          }
+
+                          final reviews = snapshot.data as List;
+
+                          if (reviews.isEmpty) {
+                            return const Padding(
+                              padding: EdgeInsets.only(bottom: 24),
+                              child: Text("Belum ada ulasan"),
+                            );
+                          }
+
+                          return Column(
+                            children: reviews.map((review) {
+                              return Card(
+                                child: ListTile(
+                                  leading: const Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                  ),
+                                  title: Text(
+                                    review["profiles"]?["nama"] ?? "-",
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "${review["rating"]}/5",
+                                      ),
+                                      Text(
+                                        review["review"] ?? "",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 24), // Spacing bawah agar rapi saat scroll mentok
+                    ],
                   ),
                 ),
-
-                // IMAGE
-                if (data['image_url'] != null && data['image_url'] != '')
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.network(
-                      data['image_url'],
-                      height: 220,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                else
-                  Container(
-                    height: 150,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: const Icon(Icons.image_not_supported, size: 50, color: Colors.grey),
-                  ),
-
-                const SizedBox(height: 16, width: double.infinity),
-
-                // NAME
-                Text(
-                  data['nama_produk'] ?? '-',
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
-
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 12),
-                  child: Divider(),
-                ),
-
-                // INFO LIST
-                _buildDetailRow(Icons.monetization_on_outlined, 'Harga', 'Rp ${data['harga']}'),
-                _buildDetailRow(Icons.layers_outlined, 'Stok', '${data['stok']} unit'),
-                _buildDetailRow(Icons.category_outlined, 'Kategori', '${data['kategori']}'),
-                _buildDetailRow(Icons.description_outlined, 'Deskripsi', '${data['deskripsi'] ?? '-'}'),
-                _buildDetailRow(Icons.location_on_outlined, 'Latitude', '${data['latitude'] ?? '-'}'),
-                _buildDetailRow(Icons.location_on_outlined, 'Longitude', '${data['longitude'] ?? '-'}'),
-              ],
-            ),
+              );
+            },
           );
         },
       );

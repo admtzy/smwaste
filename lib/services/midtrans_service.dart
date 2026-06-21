@@ -31,7 +31,9 @@ class MidtransService {
       print("DATA : ${response.data}");
 
       if (response.data == null) {
-        throw Exception("Response kosong");
+        throw Exception(
+          "Response kosong",
+        );
       }
 
       return Map<String, dynamic>.from(
@@ -50,22 +52,46 @@ class MidtransService {
   // CEK STATUS PEMBAYARAN
   // ===================================
 
-Future<Map<String, dynamic>>
-    checkPaymentStatus(
-  String orderId,
-) async {
-  final response =
-      await supabase.functions.invoke(
-    "cek-payment",
-    body: {
-      "order_id": orderId,
-    },
-  );
+  Future<Map<String, dynamic>>
+      checkPaymentStatus(
+    String orderId,
+  ) async {
+    try {
+      print("==================================");
+      print("CEK PAYMENT");
+      print("ORDER ID : $orderId");
 
-  print(response.data);
+      final response =
+          await supabase.functions.invoke(
+        "cek-payment",
+        body: {
+          "order_id": orderId,
+        },
+      );
 
-  return Map<String, dynamic>.from(
-    response.data,
-  );
-}
+      print(
+        "STATUS CODE : ${response.status}",
+      );
+
+      print(
+        "DATA : ${response.data}",
+      );
+
+      if (response.data == null) {
+        throw Exception(
+          "Response kosong",
+        );
+      }
+
+      return Map<String, dynamic>.from(
+        response.data,
+      );
+    } catch (e, s) {
+      print("ERROR CEK PAYMENT");
+      print(e);
+      print(s);
+
+      rethrow;
+    }
+  }
 }
