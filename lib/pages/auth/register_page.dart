@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 
 import '../../services/auth_service.dart';
 import 'login_page.dart';
@@ -11,29 +12,59 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  // ==========================================
+  // 1. BAGIAN LOGIKA
+  // ==========================================
   final authService = AuthService();
 
+  // Controller bawaan
   final emailC = TextEditingController();
   final passwordC = TextEditingController();
 
-  bool isLoading = false;
+  // Controller tambahan untuk menyesuaikan UI Baru
+  final nameC = TextEditingController();
+  final confirmPasswordC = TextEditingController();
 
+  bool isLoading = false;
   String role = 'pembeli';
+
+  // State untuk UI Baru
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
+  bool _acceptTerms = false;
+
+  // Warna khusus berdasarkan spesifikasi desain UI Baru
+  final Color _colorPrimary = const Color(0xFF276955); // Forest Pine
+  final Color _colorSageMint = const Color(0xFFd5e7da); // Sage Mint
+  final Color _colorSurface = const Color(0xFFfcf9f8); // Eco Canvas
+  final Color _colorOnSurface = const Color(0xFF1c1b1b);
+  final Color _colorOnSurfaceVariant = const Color(0xFF3f4944);
 
   @override
   void dispose() {
     emailC.dispose();
     passwordC.dispose();
+    nameC.dispose();
+    confirmPasswordC.dispose();
     super.dispose();
   }
 
   Future<void> register() async {
+    // Validasi Form
     if (emailC.text.isEmpty || passwordC.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Email dan Password wajib diisi'),
-        ),
-      );
+      _showSnackBar('Email dan Password wajib diisi');
+      return;
+    }
+
+    // Validasi Konfirmasi Password (Sesuai UI Baru)
+    if (passwordC.text != confirmPasswordC.text) {
+      _showSnackBar('Konfirmasi Password tidak cocok');
+      return;
+    }
+
+    // Validasi Syarat & Ketentuan (Sesuai UI Baru)
+    if (!_acceptTerms) {
+      _showSnackBar('Anda harus menyetujui Syarat & Ketentuan');
       return;
     }
 
@@ -42,8 +73,8 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     final result = await authService.register(
-      email: emailC.text,
-      password: passwordC.text,
+      email: emailC.text.trim(),
+      password: passwordC.text.trim(),
       role: role,
     );
 
@@ -52,256 +83,486 @@ class _RegisterPageState extends State<RegisterPage> {
     });
 
     if (result == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Register berhasil'),
-        ),
-      );
+      _showSnackBar('Register berhasil');
 
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (_) => const LoginPage(),
-        ),
+        MaterialPageRoute(builder: (_) => const LoginPage()),
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result),
-        ),
-      );
+      _showSnackBar(result);
     }
   }
 
+  void _showSnackBar(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  // ==========================================
+  // 2. BAGIAN UI BARU
+  // ==========================================
   @override
   Widget build(BuildContext context) {
-    // Definisi tema warna konstan
-    const primaryGreen = Color(0xFF236652);
-    const lightGreenBg = Color(0xFFD6E8DB);
-
     return Scaffold(
-      backgroundColor: primaryGreen,
+      backgroundColor: _colorPrimary,
       body: SafeArea(
         bottom: false,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // Header Area: Logo Smart Leaf
-              const SizedBox(height: 30),
-              Column(
+        child: Column(
+          children: [
+            // Header Area: Brand Logo (Kecil di atas saat form panjang)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24.0),
+              child: Column(
                 children: [
-                  const Icon(
-                    Icons.all_inclusive,
-                    size: 50,
-                    color: Colors.white,
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 10,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    padding: const EdgeInsets.all(3),
+                    margin: const EdgeInsets.only(bottom: 12),
+                    // === KODE LOGO BARU ===
+                    child: ClipOval(
+                      child: Image.asset('assets/images/logo.jpg', fit: BoxFit.cover),
+                    ),
+                    // ======================
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    "Smart Leaf",
+                  const Text(
+                    'SMARTWASTE',
                     style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white.withOpacity(0.9),
+                      fontFamily: 'Hanken Grotesk',
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: 1.0,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 30),
+            ),
 
-              // Container Form Putih Melengkung
-              Container(
+            // Sliding Sheet Form
+            Expanded(
+              child: Container(
                 width: double.infinity,
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height - 180,
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
+                decoration: BoxDecoration(
+                  color: _colorSurface,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(32),
+                    topRight: Radius.circular(32),
                   ),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Judul Form
-                    const Center(
-                      child: Text(
-                        "Create new Account",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-
-                    // Switch ke halaman Login
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const LoginPage(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Already Registered? Log in here.",
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 35),
-
-                    // Label & Input EMAIL
-                    const Text(
-                      "EMAIL",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                        fontSize: 13,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: emailC,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: lightGreenBg,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Label & Input PASSWORD
-                    const Text(
-                      "PASSWORD",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                        fontSize: 13,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    TextField(
-                      controller: passwordC,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: lightGreenBg,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Label & Input ROLE
-                    const Text(
-                      "ROLE PENGGUNA",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                        fontSize: 13,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButtonFormField<String>(
-                      value: role,
-                      dropdownColor: Colors.white,
-                      style: const TextStyle(
-                        color: Colors.black87,
-                        fontSize: 16,
-                      ),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: lightGreenBg,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                      ),
-                      items: const [
-                        // DropdownMenuItem(
-                        //   value: 'admin',
-                        //   child: Text('Admin'),
-                        // ),
-                        DropdownMenuItem(
-                          value: 'penjual',
-                          child: Text('Penjual'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'pembeli',
-                          child: Text('Pembeli'),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          role = value!;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 35),
-
-                    // Tombol Sign Up / Register
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: isLoading ? null : register,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryGreen,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                            : const Text(
-                                "Sign up",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 20,
+                      offset: Offset(0, -4),
                     ),
                   ],
                 ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.only(
+                    left: 24.0,
+                    right: 24.0,
+                    top: 24.0,
+                    bottom: 32.0,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Sheet Handle
+                      Center(
+                        child: Container(
+                          width: 48,
+                          height: 6,
+                          margin: const EdgeInsets.only(bottom: 24),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFe5e2e1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+
+                      // Header Text
+                      Text(
+                        'Daftar Akun',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Hanken Grotesk',
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                          color: _colorOnSurface,
+                          letterSpacing: -0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Silakan lengkapi data diri Anda untuk memulai.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Hanken Grotesk',
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: _colorOnSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Role Selection Segmented Control
+                      _buildLabel('PILIH PERAN'),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFe5e2e1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => setState(() => role = 'pembeli'),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: role == 'pembeli'
+                                        ? Colors.white
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: role == 'pembeli'
+                                        ? [
+                                            const BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 2,
+                                            ),
+                                          ]
+                                        : [],
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Pembeli',
+                                    style: TextStyle(
+                                      fontFamily: 'Hanken Grotesk',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: role == 'pembeli'
+                                          ? _colorPrimary
+                                          : _colorOnSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () => setState(() => role = 'penjual'),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: role == 'penjual'
+                                        ? Colors.white
+                                        : Colors.transparent,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: role == 'penjual'
+                                        ? [
+                                            const BoxShadow(
+                                              color: Colors.black12,
+                                              blurRadius: 2,
+                                            ),
+                                          ]
+                                        : [],
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Penjual',
+                                    style: TextStyle(
+                                      fontFamily: 'Hanken Grotesk',
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w700,
+                                      color: role == 'penjual'
+                                          ? _colorPrimary
+                                          : _colorOnSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Input Nama Lengkap (Hanya visual tambahan UI)
+                      _buildLabel('NAMA LENGKAP'),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: nameC,
+                        style: TextStyle(
+                          fontFamily: 'Hanken Grotesk',
+                          color: _colorOnSurface,
+                          fontSize: 14,
+                        ),
+                        decoration: _inputDecoration('Masukkan nama lengkap'),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Input Email
+                      _buildLabel('EMAIL'),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: emailC,
+                        keyboardType: TextInputType.emailAddress,
+                        style: TextStyle(
+                          fontFamily: 'Hanken Grotesk',
+                          color: _colorOnSurface,
+                          fontSize: 14,
+                        ),
+                        decoration: _inputDecoration('contoh@email.com'),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Input Password
+                      _buildLabel('PASSWORD'),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: passwordC,
+                        obscureText: _obscurePassword,
+                        style: TextStyle(
+                          fontFamily: 'Hanken Grotesk',
+                          color: _colorOnSurface,
+                          fontSize: 14,
+                        ),
+                        decoration: _inputDecoration('••••••••').copyWith(
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: _colorOnSurfaceVariant,
+                              size: 20,
+                            ),
+                            onPressed: () => setState(
+                              () => _obscurePassword = !_obscurePassword,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Input Konfirmasi Password
+                      _buildLabel('KONFIRMASI PASSWORD'),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: confirmPasswordC,
+                        obscureText: _obscureConfirmPassword,
+                        style: TextStyle(
+                          fontFamily: 'Hanken Grotesk',
+                          color: _colorOnSurface,
+                          fontSize: 14,
+                        ),
+                        decoration: _inputDecoration('••••••••').copyWith(
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureConfirmPassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                              color: _colorOnSurfaceVariant,
+                              size: 20,
+                            ),
+                            onPressed: () => setState(
+                              () => _obscureConfirmPassword =
+                                  !_obscureConfirmPassword,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Terms & Conditions Checkbox
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: Checkbox(
+                              value: _acceptTerms,
+                              activeColor: _colorPrimary,
+                              side: const BorderSide(color: Color(0xFF707974)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              onChanged: (value) =>
+                                  setState(() => _acceptTerms = value ?? false),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: RichText(
+                              text: TextSpan(
+                                style: TextStyle(
+                                  fontFamily: 'Hanken Grotesk',
+                                  color: _colorOnSurfaceVariant,
+                                  fontSize: 12,
+                                  height: 1.5,
+                                ),
+                                children: [
+                                  const TextSpan(text: 'Saya setuju dengan '),
+                                  TextSpan(
+                                    text: 'Syarat & Ketentuan',
+                                    style: TextStyle(
+                                      color: _colorPrimary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {},
+                                  ),
+                                  const TextSpan(text: ' serta '),
+                                  TextSpan(
+                                    text: 'Kebijakan Privasi',
+                                    style: TextStyle(
+                                      color: _colorPrimary,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {},
+                                  ),
+                                  const TextSpan(text: '.'),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+
+                      // Register Button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: isLoading ? null : register,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _colorPrimary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 3,
+                                  ),
+                                )
+                              : const Text(
+                                  'Daftar Sekarang',
+                                  style: TextStyle(
+                                    fontFamily: 'Hanken Grotesk',
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Footer Link to Login
+                      RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          text: 'Sudah punya akun? ',
+                          style: TextStyle(
+                            fontFamily: 'Hanken Grotesk',
+                            color: _colorOnSurfaceVariant,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'Masuk di sini',
+                              style: TextStyle(
+                                fontFamily: 'Hanken Grotesk',
+                                color: _colorPrimary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const LoginPage(),
+                                    ),
+                                  );
+                                },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  // Helper Widget: Label Form
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Hanken Grotesk',
+        fontSize: 12,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 1.2,
+        color: _colorOnSurface,
+      ),
+    );
+  }
+
+  // Helper Widget: Input Decoration
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(
+        fontFamily: 'Hanken Grotesk',
+        color: _colorOnSurfaceVariant.withOpacity(0.5),
+        fontSize: 14,
+      ),
+      filled: true,
+      fillColor: _colorSageMint,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: _colorPrimary, width: 2),
       ),
     );
   }

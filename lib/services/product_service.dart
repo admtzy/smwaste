@@ -4,15 +4,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ProductService {
-  final supabase =
-      Supabase.instance.client;
+  final supabase = Supabase.instance.client;
 
-  // =========================
-  // GET ALL PRODUCTS
-  // =========================
-
-  Future<List<dynamic>>
-      getProducts() async {
+  Future<List<dynamic>> getProducts() async {
     final data = await supabase
         .from('products')
         .select()
@@ -24,14 +18,8 @@ class ProductService {
     return data;
   }
 
-  // =========================
-  // GET MY PRODUCTS
-  // =========================
-
-  Future<List<dynamic>>
-      getMyProducts() async {
-    final user =
-        supabase.auth.currentUser;
+  Future<List<dynamic>> getMyProducts() async {
+    final user = supabase.auth.currentUser;
 
     if (user == null) {
       throw Exception(
@@ -47,16 +35,11 @@ class ProductService {
     return data;
   }
 
-  // =========================
-  // PICK IMAGE CAMERA
-  // =========================
-
   Future<XFile?> pickFromCamera() async {
     try {
       final picker = ImagePicker();
 
-      final image =
-          await picker.pickImage(
+      final image = await picker.pickImage(
         source: ImageSource.camera,
         imageQuality: 60,
       );
@@ -69,17 +52,11 @@ class ProductService {
     }
   }
 
-  // =========================
-  // PICK IMAGE GALLERY
-  // =========================
-
-  Future<XFile?>
-      pickFromGallery() async {
+  Future<XFile?> pickFromGallery() async {
     try {
       final picker = ImagePicker();
 
-      final image =
-          await picker.pickImage(
+      final image = await picker.pickImage(
         source: ImageSource.gallery,
         imageQuality: 60,
       );
@@ -92,37 +69,26 @@ class ProductService {
     }
   }
 
-  // =========================
-  // UPLOAD IMAGE
-  // =========================
-
   Future<String> uploadImage(
     XFile image,
   ) async {
     try {
-      final Uint8List bytes =
-          await image.readAsBytes();
+      final Uint8List bytes = await image.readAsBytes();
 
       final fileName =
           'product_${DateTime.now().millisecondsSinceEpoch}.jpg';
 
-      await supabase.storage
-          .from('products')
-          .uploadBinary(
+      await supabase.storage.from('products').uploadBinary(
             fileName,
             bytes,
-            fileOptions:
-                const FileOptions(
+            fileOptions: const FileOptions(
               upsert: true,
-              contentType:
-                  'image/jpeg',
+              contentType: 'image/jpeg',
             ),
           );
 
-      final imageUrl = supabase
-          .storage
-          .from('products')
-          .getPublicUrl(fileName);
+      final imageUrl =
+          supabase.storage.from('products').getPublicUrl(fileName);
 
       return imageUrl;
     } on StorageException catch (e) {
@@ -136,12 +102,6 @@ class ProductService {
     }
   }
 
-
-
-  // =========================
-  // ADD PRODUCT
-  // =========================
-
   Future<void> addProduct({
     required String namaProduk,
     required String deskripsi,
@@ -153,8 +113,7 @@ class ProductService {
     required double longitude,
   }) async {
     try {
-      final user =
-          supabase.auth.currentUser;
+      final user = supabase.auth.currentUser;
 
       if (user == null) {
         throw Exception(
@@ -162,17 +121,17 @@ class ProductService {
         );
       }
 
-await supabase.from('products').insert({
-  'seller_id': user.id,
-  'nama_produk': namaProduk,
-  'deskripsi': deskripsi,
-  'harga': harga,
-  'stok': stok,
-  'kategori': kategori,
-  'image_url': imageUrl,
-  'latitude': latitude,
-  'longitude': longitude,
-});
+      await supabase.from('products').insert({
+        'seller_id': user.id,
+        'nama_produk': namaProduk,
+        'deskripsi': deskripsi,
+        'harga': harga,
+        'stok': stok,
+        'kategori': kategori,
+        'image_url': imageUrl,
+        'latitude': latitude,
+        'longitude': longitude,
+      });
     } catch (e) {
       throw Exception(
         'Tambah produk gagal: $e',
@@ -180,34 +139,21 @@ await supabase.from('products').insert({
     }
   }
 
-  // =========================
-  // UPDATE PRODUCT
-  // =========================
-
   Future<void> updateProduct({
-required String id,
-required String namaProduk,
-required String deskripsi,
-required int harga,
-required int stok,
-required String kategori,
-}) async {
+    required String id,
+    required String namaProduk,
+    required String deskripsi,
+    required int harga,
+    required int stok,
+    required String kategori,
+  }) async {
     try {
-      await supabase
-          .from('products')
-          .update({
-        'nama_produk':
-            namaProduk,
-
-        'deskripsi':
-            deskripsi,
-
+      await supabase.from('products').update({
+        'nama_produk': namaProduk,
+        'deskripsi': deskripsi,
         'harga': harga,
-
         'stok': stok,
-
-        'kategori':
-            kategori,
+        'kategori': kategori,
       }).eq('id', id);
     } catch (e) {
       throw Exception(
@@ -216,26 +162,19 @@ required String kategori,
     }
   }
 
-  // =========================
-// ADMIN GET ALL PRODUCTS
-// =========================
-
   Future<List<dynamic>> getAllProductsAdmin() async {
     try {
-      final data = await supabase
-          .from('products')
-          .select('''
+      final data = await supabase.from('products').select('''
             *,
             profiles (
               id,
               nama,
               email
             )
-          ''')
-          .order(
-            'created_at',
-            ascending: false,
-          );
+          ''').order(
+        'created_at',
+        ascending: false,
+      );
 
       return data;
     } catch (e) {
@@ -252,18 +191,14 @@ required String kategori,
     try {
       final fileName = imageUrl.split('/').last;
 
-      await supabase.storage
-          .from('products')
-          .remove([fileName]);
+      await supabase.storage.from('products').remove([fileName]);
 
-      await supabase
-          .from('products')
-          .delete()
-          .eq('id', productId);
+      await supabase.from('products').delete().eq('id', productId);
     } catch (e) {
       throw Exception('Admin gagal menghapus produk: $e');
     }
   }
+
   Future<dynamic> getProductDetailAdmin(
     String productId,
   ) async {
@@ -282,19 +217,11 @@ required String kategori,
     }
   }
 
-
-  // =========================
-  // DELETE PRODUCT
-  // =========================
-
   Future<void> deleteProduct(
     String id,
   ) async {
     try {
-      await supabase
-          .from('products')
-          .delete()
-          .eq('id', id);
+      await supabase.from('products').delete().eq('id', id);
     } catch (e) {
       throw Exception(
         'Delete produk gagal: $e',

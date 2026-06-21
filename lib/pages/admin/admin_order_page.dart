@@ -83,136 +83,88 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
             },
             child: ListView.builder(
               itemCount: orders.length,
+              // Di bagian _AdminOrderPageState, perbarui bagian itemBuilder:
+
               itemBuilder: (context, index) {
                 final order = orders[index];
-
                 final buyer = order["buyer"];
-
                 final List items = order["order_items"] ?? [];
 
                 return Card(
-                  margin: const EdgeInsets.all(10),
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: Colors.black.withOpacity(0.1)),
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.all(12),
+                    padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          "PEMBELI",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        // Header: Order ID & Status
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text("ORDER ID", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+                                Text("#${order["id"].toString().substring(0, 8)}", style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                            Chip(
+                              backgroundColor: statusColor(order["payment_status"] ?? "").withOpacity(0.2),
+                              label: Text(
+                                (order["payment_status"] ?? "").toUpperCase(),
+                                style: TextStyle(color: statusColor(order["payment_status"] ?? ""), fontSize: 10, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
                         ),
-
-                        textIfNotNull("Nama : ", buyer?["nama"]),
-                        textIfNotNull("Email : ", buyer?["email"]),
-                        textIfNotNull("No HP : ", buyer?["no_hp"]),
-                        textIfNotNull("Alamat : ", buyer?["alamat"]),
+                        const Divider(),
+                        
+                        // Buyer Info
+                        const Text("PEMBELI", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+                        Text(buyer?["nama"] ?? "-", style: const TextStyle(fontWeight: FontWeight.w500)),
+                        Text(buyer?["no_hp"] ?? "-", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                        Text(buyer?["alamat"] ?? "-", style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                        
+                        const SizedBox(height: 12),
+                        
+                        // Seller Info
+                        const Text("PENJUAL (UMKM)", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+                        ...items.map((e) => Padding(
+                          padding: const EdgeInsets.only(top: 4),
+                          child: Text(e["seller"]?["nama_umkm"] ?? "-", style: const TextStyle(fontWeight: FontWeight.w500)),
+                        )).toList(),
 
                         const Divider(),
 
-                        Text("Order ID : ${order["id"]}"),
-                        Text("Grand Total : Rp ${order["grand_total"]}"),
-                        Text("Total Produk : Rp ${order["total"]}"),
-                        Text("Ongkir : Rp ${order["total_ongkir"]}"),
-                        Text("Admin Fee : Rp ${order["admin_fee"]}"),
-
-                        const SizedBox(height: 15),
-
-                        const Text(
-                          "PENJUAL",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
+                        // Product Summary
+                        const Text("RINGKASAN PRODUK", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
+                        ...items.map((e) => Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(8)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(e["nama_produk"] ?? ""),
+                              Text("x ${e["qty"]}", style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                            ],
                           ),
-                        ),
+                        )).toList(),
 
-                        ...items.map<Widget>((e) {
-                          final seller = e["seller"];
+                        const SizedBox(height: 12),
 
-                          return Card(
-                            margin:
-                                const EdgeInsets.symmetric(vertical: 5),
-                            color: Colors.grey.shade100,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8),
-                              child: Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.start,
-                                children: [
-                                  // Text(
-                                  //   "DEBUG : ${seller.toString()}",
-                                  // ),
-
-                                  textIfNotNull(
-                                    "Nama : ",
-                                    seller?["nama"],
-                                  ),
-
-                                  textIfNotNull(
-                                    "Email : ",
-                                    seller?["email"],
-                                  ),
-
-                                  textIfNotNull(
-                                    "No HP : ",
-                                    seller?["no_hp"],
-                                  ),
-
-                                  textIfNotNull(
-                                    "Alamat : ",
-                                    seller?["alamat"],
-                                  ),
-
-                                  textIfNotNull(
-                                    "Nama UMKM : ",
-                                    seller?["nama_umkm"],
-                                  ),
-
-                                  textIfNotNull(
-                                    "Kategori : ",
-                                    seller?["kategori_umkm"],
-                                  ),
-
-                                  const Divider(),
-
-                                  textIfNotNull(
-                                    "Produk : ",
-                                    e["nama_produk"],
-                                  ),
-
-                                  textIfNotNull(
-                                    "Qty : ",
-                                    e["qty"],
-                                  ),
-
-                                  textIfNotNull(
-                                    "Harga : Rp ",
-                                    e["harga"],
-                                  ),
-
-                                  textIfNotNull(
-                                    "Subtotal : Rp ",
-                                    e["subtotal"],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }).toList(),
-
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Chip(
-                            backgroundColor: statusColor(
-                              order["payment_status"] ?? "",
-                            ),
-                            label: Text(
-                              order["payment_status"] ?? "",
-                              style: const TextStyle(
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
+                        // Total
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text("Total Harga", style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text("Rp ${order["grand_total"]}", style: const TextStyle(color: Color(0xFF004E3B), fontWeight: FontWeight.bold, fontSize: 16)),
+                          ],
                         ),
                       ],
                     ),

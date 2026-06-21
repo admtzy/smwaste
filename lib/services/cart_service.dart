@@ -3,9 +3,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class CartService {
   final supabase = Supabase.instance.client;
 
-  // =========================
-  // ADD TO CART
-  // =========================
   Future<void> addToCart({
     required String productId,
     required int qty,
@@ -17,7 +14,6 @@ class CartService {
         throw Exception('User belum login');
       }
 
-      // ambil produk
       final product = await supabase
           .from('products')
           .select()
@@ -38,7 +34,6 @@ class CartService {
         throw Exception('Stok hanya tersedia $stok');
       }
 
-      // cek cart existing
       final existingCart = await supabase
           .from('carts')
           .select()
@@ -70,9 +65,6 @@ class CartService {
     }
   }
 
-  // =========================
-  // GET CART + ONGKIR (FIXED)
-  // =========================
   Future<List> getCart() async {
     try {
       final user = supabase.auth.currentUser;
@@ -81,7 +73,6 @@ class CartService {
         throw Exception('User belum login');
       }
 
-      // 🔥 FIX: pakai inner join supaya products tidak NULL
       final data = await supabase
           .from('carts')
           .select('''
@@ -98,7 +89,6 @@ class CartService {
           ''')
           .eq('user_id', user.id);
 
-      // ambil data buyer
       final buyer = await supabase
           .from('profiles')
           .select()
@@ -115,7 +105,6 @@ class CartService {
       for (var item in data) {
         final product = item['products'];
 
-        // 🔥 safety check
         if (product == null) continue;
 
         final sellerId = product['seller_id'];
@@ -156,16 +145,10 @@ class CartService {
     }
   }
 
-  // =========================
-  // DELETE CART
-  // =========================
   Future<void> deleteCart(String cartId) async {
     await supabase.from('carts').delete().eq('id', cartId);
   }
 
-  // =========================
-  // UPDATE QTY
-  // =========================
   Future<void> updateQty({
     required String cartId,
     required int qty,
@@ -180,9 +163,6 @@ class CartService {
         .eq('id', cartId);
   }
 
-  // =========================
-  // CLEAR CART
-  // =========================
   Future<void> clearCart() async {
     final user = supabase.auth.currentUser;
     if (user == null) return;

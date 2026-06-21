@@ -46,78 +46,51 @@ class ReviewService {
   }
 
   Future<Map<String, dynamic>> getRatingInfo(
-  String productId,
-) async {
-  final reviews = await supabase
-      .from("product_reviews")
-      .select()
-      .eq(
-        "product_id",
-        productId,
-      );
+    String productId,
+  ) async {
+    final reviews = await supabase
+        .from("product_reviews")
+        .select()
+        .eq(
+          "product_id",
+          productId,
+        );
 
-  if (reviews.isEmpty) {
+    if (reviews.isEmpty) {
+      return {
+        "average": 0.0,
+        "count": 0,
+      };
+    }
+
+    double total = 0;
+
+    for (final item in reviews) {
+      total += (item["rating"] ?? 0).toDouble();
+    }
+
     return {
-      "average": 0.0,
-      "count": 0,
+      "average": total / reviews.length,
+      "count": reviews.length,
     };
   }
 
-  double total = 0;
-
-  for (final item in reviews) {
-    total +=
-        (item["rating"] ?? 0)
-            .toDouble();
-  }
-
-  return {
-    "average":
-        total / reviews.length,
-    "count":
-        reviews.length,
-  };
-}
-
-  // Future<List<dynamic>> getReviews(
-  //   String productId,
-  // ) async {
-  //   return await supabase
-  //       .from("product_reviews")
-  //       .select("""
-  //       *,
-  //       profiles(
-  //         nama
-  //       )
-  //     """)
-  //       .eq("product_id", productId)
-  //       .order(
-  //         "created_at",
-  //         ascending: false,
-  //       );
-  // }
-
   Future<List<dynamic>> getReviews(
-  String productId,
-) async {
-
-  return await supabase
-      .from("product_reviews")
-      .select("""
+    String productId,
+  ) async {
+    return await supabase.from("product_reviews").select("""
       *,
       profiles(
         nama
       )
-    """)
-      .eq(
-        "product_id",
-        productId,
-      )
-      .order(
-        "created_at",
-        ascending: false,
-      );
-}
+    """).eq(
+      "product_id",
+      productId,
+    ).order(
+      "created_at",
+      ascending: false,
+    );
+  }
 
   Future<bool> sudahReview(
     String orderId,

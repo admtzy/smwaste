@@ -14,21 +14,14 @@ class ReviewPage extends StatefulWidget {
   });
 
   @override
-  State<ReviewPage> createState() =>
-      _ReviewPageState();
+  State<ReviewPage> createState() => _ReviewPageState();
 }
 
-class _ReviewPageState
-    extends State<ReviewPage> {
-  final ReviewService reviewService =
-      ReviewService();
-
-  final TextEditingController
-      reviewController =
-      TextEditingController();
+class _ReviewPageState extends State<ReviewPage> {
+  final ReviewService reviewService = ReviewService();
+  final TextEditingController reviewController = TextEditingController();
 
   int rating = 5;
-
   bool loading = false;
 
   Future<void> submitReview() async {
@@ -46,8 +39,7 @@ class _ReviewPageState
 
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
             "Terima kasih atas penilaian Anda",
@@ -62,20 +54,20 @@ class _ReviewPageState
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             e.toString(),
           ),
         ),
       );
-    }
-
-    if (mounted) {
-      setState(() {
-        loading = false;
-      });
+    } finally {
+      // PERBAIKAN: Menjamin status loading kembali ke false baik saat sukses maupun terjadi error
+      if (mounted) {
+        setState(() {
+          loading = false;
+        });
+      }
     }
   }
 
@@ -86,109 +78,138 @@ class _ReviewPageState
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
+    // Definisi Palet Warna Konsisten (SMARTWASTE Theme)
+    const colorBackground = Color(0xFFFCF9F8); // bg-background
+    const colorSurface = Color(0xFFFCF9F8); // bg-surface
+    const colorOnSurface = Color(0xFF1C1B1B); // text-on-surface
+    const colorOnSurfaceVariant = Color(0xFF3F4944); // text-on-surface-variant
+    const colorOutlineVariant = Color(0xFFBFC9C3); // border-outline-variant
+    const colorPrimary = Color(0xFF004E3B); // primary green
+    const colorOnPrimary = Color(0xFFFFFFFF); // text-on-primary
+
     return Scaffold(
+      backgroundColor: colorBackground,
       appBar: AppBar(
+        backgroundColor: colorSurface,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: colorOnSurface),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        titleSpacing: 0,
         title: const Text(
           "Beri Penilaian",
+          style: TextStyle(
+            color: colorOnSurface,
+            fontFamily: 'Hanken Grotesk',
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
-
-      body: SingleChildScrollView(
-        padding:
-            const EdgeInsets.all(20),
-
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start,
-
-          children: [
-            const Text(
-              "Bagaimana kualitas produk ini?",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight:
-                    FontWeight.bold,
-              ),
-            ),
-
-            const SizedBox(
-              height: 20,
-            ),
-
-            Center(
-              child: RatingBar.builder(
-                initialRating: 5,
-                minRating: 1,
-                allowHalfRating: false,
-                itemCount: 5,
-                itemSize: 40,
-
-                itemBuilder:
-                    (context, _) =>
-                        const Icon(
-                  Icons.star,
-                  color: Colors.amber,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0), // Menyesuaikan px-lg dari desain sebelumnya
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Judul Pertanyaan Kualitas
+              const Text(
+                "Bagaimana kualitas produk ini?",
+                style: TextStyle(
+                  color: colorOnSurface,
+                  fontFamily: 'Hanken Grotesk',
+                  fontSize: 16, // setara text-title-sm
+                  fontWeight: FontWeight.bold,
                 ),
-
-                onRatingUpdate:
-                    (value) {
-                  rating =
-                      value.toInt();
-                },
               ),
-            ),
+              const SizedBox(height: 24),
 
-            const SizedBox(
-              height: 30,
-            ),
+              // Baris Rating Bintang
+              Center(
+                child: RatingBar.builder(
+                  initialRating: 5,
+                  minRating: 1,
+                  allowHalfRating: false,
+                  itemCount: 5,
+                  itemSize: 40,
+                  itemBuilder: (context, _) => const Icon(
+                    Icons.star,
+                    color: Colors.amber,
+                  ),
+                  onRatingUpdate: (value) {
+                    rating = value.toInt();
+                  },
+                ),
+              ),
+              const SizedBox(height: 32),
 
-            TextField(
-              controller:
-                  reviewController,
-
-              maxLines: 5,
-
-              decoration:
-                  InputDecoration(
-                hintText:
-                    "Tulis ulasan Anda...",
-                border:
-                    OutlineInputBorder(
-                  borderRadius:
-                      BorderRadius.circular(
-                    12,
+              // Input Teks Ulasan dengan style border outline-variant tipis
+              TextField(
+                controller: reviewController,
+                maxLines: 5,
+                cursorColor: colorPrimary,
+                style: const TextStyle(
+                  fontFamily: 'Hanken Grotesk',
+                  color: colorOnSurface,
+                  fontSize: 14,
+                ),
+                decoration: InputDecoration(
+                  hintText: "Tulis ulasan Anda...",
+                  hintStyle: const TextStyle(
+                    color: colorOnSurfaceVariant,
+                    fontFamily: 'Hanken Grotesk',
+                  ),
+                  filled: true,
+                  fillColor: const Color(0xFFFFFFFF), // bg-surface-container-lowest
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: colorPrimary, width: 1.5),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: const BorderSide(color: colorOutlineVariant),
                   ),
                 ),
               ),
-            ),
+              const SizedBox(height: 32),
 
-            const SizedBox(
-              height: 30,
-            ),
-
-            SizedBox(
-              width:
-                  double.infinity,
-              height: 55,
-
-              child: ElevatedButton(
-                onPressed:
-                    loading
-                        ? null
-                        : submitReview,
-
-                child:
-                    loading
-                        ? const CircularProgressIndicator()
-                        : const Text(
-                            "Kirim Penilaian",
+              // Tombol Kirim Utama
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: colorPrimary,
+                    foregroundColor: colorOnPrimary,
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8), // rounded-lg
+                    ),
+                  ),
+                  onPressed: loading ? null : submitReview,
+                  child: loading
+                      ? const SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            color: colorOnPrimary,
+                            strokeWidth: 2.5,
                           ),
+                        )
+                      : const Text(
+                          "Kirim Penilaian",
+                          style: TextStyle(
+                            fontFamily: 'Hanken Grotesk',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

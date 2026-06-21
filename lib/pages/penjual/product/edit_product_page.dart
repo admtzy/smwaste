@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../../services/product_service.dart';
 
 class EditProductPage extends StatefulWidget {
@@ -11,89 +10,36 @@ class EditProductPage extends StatefulWidget {
   });
 
   @override
-  State<EditProductPage> createState() =>
-      _EditProductPageState();
+  State<EditProductPage> createState() => _EditProductPageState();
 }
 
-class _EditProductPageState
-    extends State<EditProductPage> {
-  final productService =
-      ProductService();
+class _EditProductPageState extends State<EditProductPage> {
+  final productService = ProductService();
 
   late TextEditingController namaC;
-
-  late TextEditingController
-      deskripsiC;
-
+  late TextEditingController deskripsiC;
   late TextEditingController hargaC;
-
   late TextEditingController stokC;
-
-  // late TextEditingController
-  //     kecamatanC;
-
-  // late TextEditingController
-  //     kabupatenC;
-
   late String kategori;
-
   bool isLoading = false;
 
-  // =========================
-  // INIT
-  // =========================
+  // Kode Warna Berdasarkan Desain Tailwind SmartWaste
+  static const Color colorPrimary = Color(0xFF004E3B);
+  static const Color colorBackground = Color(0xFFFCF9F8);
+  static const Color colorSurfaceContainer = Color(0xFFF0EDEC);
+  static const Color colorSecondaryContainer = Color(0xFFD5E7DA);
+  static const Color colorOnSurface = Color(0xFF1C1B1B);
+  static const Color colorOnSurfaceVariant = Color(0xFF3F4944);
 
   @override
   void initState() {
     super.initState();
-
-    namaC = TextEditingController(
-      text:
-          widget.product['nama_produk'] ??
-          '',
-    );
-
-    deskripsiC =
-        TextEditingController(
-      text:
-          widget.product['deskripsi'] ??
-          '',
-    );
-
-    hargaC = TextEditingController(
-      text:
-          widget.product['harga']
-              .toString(),
-    );
-
-    stokC = TextEditingController(
-      text:
-          widget.product['stok']
-              .toString(),
-    );
-
-    // kecamatanC =
-    //     TextEditingController(
-    //   text:
-    //       widget.product['kecamatan'] ??
-    //       '',
-    // );
-
-    // kabupatenC =
-    //     TextEditingController(
-    //   text:
-    //       widget.product['kabupaten'] ??
-    //       '',
-    // );
-
-    kategori =
-        widget.product['kategori'] ??
-        'Makanan';
+    namaC = TextEditingController(text: widget.product['nama_produk'] ?? '');
+    deskripsiC = TextEditingController(text: widget.product['deskripsi'] ?? '');
+    hargaC = TextEditingController(text: widget.product['harga']?.toString() ?? '');
+    stokC = TextEditingController(text: widget.product['stok']?.toString() ?? '');
+    kategori = widget.product['kategori'] ?? 'Makanan';
   }
-
-  // =========================
-  // UPDATE PRODUCT
-  // =========================
 
   Future<void> updateProduct() async {
     try {
@@ -101,16 +47,9 @@ class _EditProductPageState
           deskripsiC.text.isEmpty ||
           hargaC.text.isEmpty ||
           stokC.text.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(
-          const SnackBar(
-            content: Text(
-              'Semua field wajib diisi',
-            ),
-          ),
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Semua field wajib diisi')),
         );
-
         return;
       }
 
@@ -118,57 +57,24 @@ class _EditProductPageState
         isLoading = true;
       });
 
-      await productService
-          .updateProduct(
+      await productService.updateProduct(
         id: widget.product['id'],
-
-        namaProduk:
-            namaC.text.trim(),
-
-        deskripsi:
-            deskripsiC.text.trim(),
-
-        harga: int.parse(
-          hargaC.text,
-        ),
-
-        stok: int.parse(
-          stokC.text,
-        ),
-
+        namaProduk: namaC.text.trim(),
+        deskripsi: deskripsiC.text.trim(),
+        harga: int.parse(hargaC.text),
+        stok: int.parse(stokC.text),
         kategori: kategori,
-
-        // kecamatan:
-        //     kecamatanC.text.trim(),
-
-        // kabupaten:
-        //     kabupatenC.text.trim(),
       );
 
       if (!mounted) return;
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Produk berhasil diupdate',
-          ),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Produk berhasil diupdate')),
       );
-
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
-
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Error : $e',
-          ),
-        ),
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error : $e')),
       );
     } finally {
       if (mounted) {
@@ -179,278 +85,226 @@ class _EditProductPageState
     }
   }
 
-  // =========================
-  // DISPOSE
-  // =========================
-
   @override
   void dispose() {
     namaC.dispose();
-
     deskripsiC.dispose();
-
     hargaC.dispose();
-
     stokC.dispose();
-
-    // kecamatanC.dispose();
-
-    // kabupatenC.dispose();
-
     super.dispose();
   }
 
-  // =========================
-  // UI
-  // =========================
-
-  @override
-  Widget build(
-    BuildContext context,
-  ) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Edit Produk',
+  // Widget Pembantu untuk Membuat Label Form Elegan (Caps Style)
+  Widget _buildFormLabel(String label) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Text(
+        label.toUpperCase(),
+        style: const TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w800,
+          color: colorOnSurfaceVariant,
+          letterSpacing: 1.2,
         ),
       ),
+    );
+  }
 
-      body: Padding(
-        padding:
-            const EdgeInsets.all(20),
+  // Dekorasi Input Standar Meniru Style HTML
+  InputDecoration _inputStyle({String? prefixText, String? hintText}) {
+    return InputDecoration(
+      prefixText: prefixText,
+      hintText: hintText,
+      prefixStyle: const TextStyle(color: colorOnSurfaceVariant, fontWeight: FontWeight.w500),
+      fillColor: colorSecondaryContainer,
+      filled: true,
+      contentPadding: const EdgeInsets.all(16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF004e3b), width: 2),
+      ),
+    );
+  }
 
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              // =========================
-              // IMAGE
-              // =========================
-
-              if (widget.product['image_url'] !=
-                      null &&
-                  widget
-                      .product['image_url']
-                      .toString()
-                      .isNotEmpty)
-                ClipRRect(
-                  borderRadius:
-                      BorderRadius.circular(
-                    12,
-                  ),
-
-                  child: Image.network(
-                    widget.product[
-                        'image_url'],
-
-                    width:
-                        double.infinity,
-
-                    height: 220,
-
-                    fit: BoxFit.cover,
-                  ),
-                ),
-
-              const SizedBox(height: 20),
-
-              // =========================
-              // NAMA
-              // =========================
-
-              TextField(
-                controller: namaC,
-
-                decoration:
-                    const InputDecoration(
-                  labelText:
-                      'Nama Produk',
-
-                  border:
-                      OutlineInputBorder(),
-                ),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: colorBackground,
+      appBar: AppBar(
+        backgroundColor: colorBackground,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: colorOnSurface),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Edit Produk',
+          style: TextStyle(
+            color: colorOnSurface,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 120), // Padding ekstra di bawah agar tidak tertutup tombol
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ==========================================
+            // BOX PREVIEW GAMBAR (Meniru Desain HTML)
+            // ==========================================
+            Container(
+              width: double.infinity,
+              height: 192, // h-48 Tailwind
+              decoration: BoxDecoration(
+                color: colorSurfaceContainer,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.black.withOpacity(0.05)),
               ),
-
-              const SizedBox(height: 15),
-
-              // =========================
-              // DESKRIPSI
-              // =========================
-
-              TextField(
-                controller: deskripsiC,
-
-                maxLines: 4,
-
-                decoration:
-                    const InputDecoration(
-                  labelText:
-                      'Deskripsi',
-
-                  border:
-                      OutlineInputBorder(),
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              // =========================
-              // HARGA
-              // =========================
-
-              TextField(
-                controller: hargaC,
-
-                keyboardType:
-                    TextInputType.number,
-
-                decoration:
-                    const InputDecoration(
-                  labelText: 'Harga',
-
-                  border:
-                      OutlineInputBorder(),
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              // =========================
-              // STOK
-              // =========================
-
-              TextField(
-                controller: stokC,
-
-                keyboardType:
-                    TextInputType.number,
-
-                decoration:
-                    const InputDecoration(
-                  labelText: 'Stok',
-
-                  border:
-                      OutlineInputBorder(),
-                ),
-              ),
-
-              const SizedBox(height: 15),
-
-              // =========================
-              // KATEGORI
-              // =========================
-
-              DropdownButtonFormField<
-                  String>(
-                value: kategori,
-
-                decoration:
-                    const InputDecoration(
-                  border:
-                      OutlineInputBorder(),
-
-                  labelText:
-                      'Kategori',
-                ),
-
-                items: const [
-                  DropdownMenuItem(
-                    value: 'Makanan',
-
-                    child: Text(
-                      'Makanan',
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                children: [
+                  if (widget.product['image_url'] != null && widget.product['image_url'].toString().isNotEmpty)
+                    Image.network(
+                      widget.product['image_url'],
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.cover,
                     ),
-                  ),
-
-                  DropdownMenuItem(
-                    value: 'Minuman',
-
-                    child: Text(
-                      'Minuman',
-                    ),
-                  ),
-
-                  DropdownMenuItem(
-                    value: 'Fashion',
-
-                    child: Text(
-                      'Fashion',
+                  Container(
+                    color: Colors.black.withOpacity(0.15),
+                    child: const Center(
+                      child: Icon(
+                        Icons.photo_camera,
+                        color: Colors.white,
+                        size: 30,
+                      ),
                     ),
                   ),
                 ],
-
-                onChanged: (value) {
-                  setState(() {
-                    kategori = value!;
-                  });
-                },
               ),
+            ),
+            const SizedBox(height: 35),
 
-              // const SizedBox(height: 15),
+            // FORM UTAMA
+            _buildFormLabel('Nama Produk'),
+            TextField(
+              controller: namaC,
+              style: const TextStyle(color: colorOnSurface),
+              decoration: _inputStyle(),
+            ),
+            const SizedBox(height: 24),
 
-              // // =========================
-              // // KECAMATAN
-              // // =========================
+            _buildFormLabel('Deskripsi'),
+            TextField(
+              controller: deskripsiC,
+              maxLines: 4,
+              style: const TextStyle(color: colorOnSurface),
+              decoration: _inputStyle(),
+            ),
+            const SizedBox(height: 24),
 
-              // TextField(
-              //   controller:
-              //       kecamatanC,
-
-              //   decoration:
-              //       const InputDecoration(
-              //     labelText:
-              //         'Kecamatan',
-
-              //     border:
-              //         OutlineInputBorder(),
-              //   ),
-              // ),
-
-              // const SizedBox(height: 15),
-
-              // // =========================
-              // // KABUPATEN
-              // // =========================
-
-              // TextField(
-              //   controller:
-              //       kabupatenC,
-
-              //   decoration:
-              //       const InputDecoration(
-              //     labelText:
-              //         'Kabupaten',
-
-              //     border:
-              //         OutlineInputBorder(),
-              //   ),
-              // ),
-
-              const SizedBox(height: 25),
-
-              // =========================
-              // BUTTON
-              // =========================
-
-              SizedBox(
-                width:
-                    double.infinity,
-
-                height: 50,
-
-                child: ElevatedButton(
-                  onPressed:
-                      isLoading
-                          ? null
-                          : updateProduct,
-
-                  child: isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text(
-                          'Update Produk',
-                        ),
+            // INPUT GRID: HARGA & STOK
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildFormLabel('Harga'),
+                      TextField(
+                        controller: hargaC,
+                        keyboardType: TextInputType.number,
+                        style: const TextStyle(color: colorOnSurface),
+                        decoration: _inputStyle(prefixText: 'Rp '),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildFormLabel('Stok'),
+                      TextField(
+                        controller: stokC,
+                        keyboardType: TextInputType.number,
+                        style: const TextStyle(color: colorOnSurface),
+                        decoration: _inputStyle(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+
+            _buildFormLabel('Kategori'),
+            DropdownButtonFormField<String>(
+              value: kategori,
+              dropdownColor: colorBackground,
+              style: const TextStyle(color: colorOnSurface, fontSize: 14),
+              decoration: _inputStyle(),
+              icon: const Icon(Icons.expand_more, color: colorOnSurfaceVariant),
+              items: const [
+                DropdownMenuItem(value: 'Makanan', child: Text('Makanan')),
+                DropdownMenuItem(value: 'Minuman', child: Text('Minuman')),
+                DropdownMenuItem(value: 'Fashion', child: Text('Fashion')),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  kategori = value!;
+                });
+              },
+            ),
+            const SizedBox(height: 35),
+
+            Divider(color: Colors.black.withOpacity(0.05), thickness: 1),
+            const SizedBox(height: 24),      
+          ],
+        ),
+      ),
+      
+      // ==========================================
+      // FIXED BOTTOM ACTION (Meniru Desain HTML)
+      // ==========================================
+      bottomNavigationBar: Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: colorBackground,
+          border: Border(top: BorderSide(color: Colors.black.withOpacity(0.05))),
+        ),
+        child: SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+          onPressed: isLoading ? null : updateProduct,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: colorPrimary, // 👈 Gunakan variabel di sini
+            foregroundColor: Colors.white,
+            disabledBackgroundColor: colorPrimary.withOpacity(0.6), // 👈 Dan di sini
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+            elevation: 0,
+            ),
+            child: isLoading
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
+                  )
+                : const Text(
+                    'Update Produk',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
           ),
         ),
       ),

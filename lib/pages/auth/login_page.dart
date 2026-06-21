@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 
 import '../../services/auth_service.dart';
 import '../../services/profile_service.dart';
@@ -18,6 +19,9 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  // ==========================================
+  // 1. BAGIAN LOGIKA (TIDAK ADA YANG BERUBAH)
+  // ==========================================
   final authService = AuthService();
   final profileService = ProfileService();
 
@@ -25,6 +29,14 @@ class _LoginPageState extends State<LoginPage> {
   final passwordC = TextEditingController();
 
   bool isLoading = false;
+  bool _obscurePassword = true;
+
+  // Warna khusus berdasarkan spesifikasi desain UI Baru
+  final Color _colorPrimary = const Color(0xFF276955); // Forest Pine
+  final Color _colorSageMint = const Color(0xFFd5e7da); // Sage Mint untuk input
+  final Color _colorSurface = const Color(0xFFfcf9f8); // Eco Canvas
+  final Color _colorOnSurface = const Color(0xFF1c1b1b);
+  final Color _colorOnSurfaceVariant = const Color(0xFF3f4944);
 
   Future<void> login() async {
     setState(() {
@@ -40,13 +52,11 @@ class _LoginPageState extends State<LoginPage> {
       final profile = await profileService.getProfile();
 
       if (profile == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(
-              "Profile tidak ditemukan",
-            ),
-          ),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Profile tidak ditemukan")),
+          );
+        }
         setState(() {
           isLoading = false;
         });
@@ -56,56 +66,36 @@ class _LoginPageState extends State<LoginPage> {
       final role = profile['role'];
       final complete = profile['is_profile_complete'];
 
-      // =========================
-      // ADMIN
-      // =========================
+      if (!mounted) return;
+
+      // Routing berdasarkan Role
       if (role == 'admin') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (_) => const AdminDashboard(),
-          ),
+          MaterialPageRoute(builder: (_) => const AdminDashboard()),
         );
-      }
-      // =========================
-      // PROFILE BELUM LENGKAP
-      // =========================
-      else if (complete == false) {
+      } else if (complete == false) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (_) => const CompleteProfilePage(),
-          ),
+          MaterialPageRoute(builder: (_) => const CompleteProfilePage()),
         );
-      }
-      // =========================
-      // PENJUAL
-      // =========================
-      else if (role == 'penjual') {
+      } else if (role == 'penjual') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (_) => const PenjualDashboard(),
-          ),
+          MaterialPageRoute(builder: (_) => const PenjualDashboard()),
         );
-      }
-      // =========================
-      // PEMBELI
-      // =========================
-      else {
+      } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (_) => const PembeliDashboard(),
-          ),
+          MaterialPageRoute(builder: (_) => const PembeliDashboard()),
         );
       }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(result),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(result)));
+      }
     }
 
     setState(() {
@@ -113,185 +103,323 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  // ==========================================
+  // 2. BAGIAN UI BARU (SESUAI GAMBAR & HTML)
+  // ==========================================
   @override
   Widget build(BuildContext context) {
-    // Definisi warna sesuai gambar UI kamu
-    const primaryGreen = Color(0xFF236652);
-    const lightGreenBg = Color(0xFFD6E8DB);
+    // Mendapatkan tinggi layar untuk membagi proporsi 30% dan 70%
+    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: primaryGreen,
-      body: SafeArea(
-        bottom: false,
-        child: SingleChildScrollView(
+      backgroundColor: _colorPrimary,
+      body: SingleChildScrollView(
+        child: SizedBox(
+          height: screenHeight,
           child: Column(
             children: [
-              // Header Area: Logo & Nama Aplikasi
-              const SizedBox(height: 30),
-              Column(
-                children: [
-                  const Icon(
-                    Icons.all_inclusive, // Menggunakan icon bawaan sebagai placeholder logo infinity
-                    size: 50,
-                    color: Colors.white,
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    "Smart Leaf",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white.withOpacity(0.9),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 30),
-
-              // White Card Container (Form)
-              Container(
-                width: double.infinity,
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height - 180,
-                ),
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(30),
-                    topRight: Radius.circular(30),
-                  ),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              // Top Area: Brand Logo (Tinggi 30%)
+              SizedBox(
+                height: screenHeight * 0.3,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Title "Login" / "Create New Account"
-                    const Center(
-                      child: Text(
-                        "Login Account",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    
-                    // Tombol switch ke register page (Menggantikan TextButton bawah agar rapi di atas)
-                    Center(
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RegisterPage(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Belum punya akun? Daftar di sini.",
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontWeight: FontWeight.w500,
+                    Container(
+                      width: 96,
+                      height: 96,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 10,
+                            offset: Offset(0, 4),
                           ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(4), // Padding diperkecil
+                      margin: const EdgeInsets.only(bottom: 16),
+                      // === KODE LOGO BARU ===
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/logo.jpg',
+                          fit: BoxFit.cover,
                         ),
                       ),
+                      // ======================
                     ),
-                    const SizedBox(height: 35),
-
-                    // Label Email
                     const Text(
-                      "EMAIL",
+                      'SMARTWASTE',
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                        fontSize: 13,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Input Email
-                    TextField(
-                      controller: emailC,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: lightGreenBg,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Label Password
-                    const Text(
-                      "PASSWORD",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 1.2,
-                        fontSize: 13,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    // Input Password
-                    TextField(
-                      controller: passwordC,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: lightGreenBg,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide.none,
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 35),
-
-                    // Button Login
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: isLoading ? null : login,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryGreen,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: isLoading
-                            ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                            : const Text(
-                                "Login",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                        fontFamily: 'Hanken Grotesk',
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 1.0,
                       ),
                     ),
                   ],
                 ),
               ),
+
+              // Sliding Sheet / White Card Form (Tinggi 70%)
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: _colorSurface,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(32),
+                      topRight: Radius.circular(32),
+                    ),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 20,
+                        offset: Offset(0, -4),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.only(
+                      left: 24.0,
+                      right: 24.0,
+                      top: 32.0,
+                      bottom: 24.0,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Header Text
+                        Text(
+                          'Masuk Akun',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Hanken Grotesk',
+                            fontSize: 28,
+                            fontWeight: FontWeight.w700,
+                            color: _colorOnSurface,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Silakan masuk untuk melanjutkan.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Hanken Grotesk',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: _colorOnSurfaceVariant,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Form Elements
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Email Input
+                                _buildLabel('EMAIL'),
+                                const SizedBox(height: 8),
+                                TextField(
+                                  controller: emailC,
+                                  keyboardType: TextInputType.emailAddress,
+                                  style: TextStyle(
+                                    fontFamily: 'Hanken Grotesk',
+                                    color: _colorOnSurface,
+                                    fontSize: 14,
+                                  ),
+                                  decoration: _inputDecoration(
+                                    'contoh@email.com',
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+
+                                // Password Input
+                                _buildLabel('PASSWORD'),
+                                const SizedBox(height: 8),
+                                TextField(
+                                  controller: passwordC,
+                                  obscureText: _obscurePassword,
+                                  style: TextStyle(
+                                    fontFamily: 'Hanken Grotesk',
+                                    color: _colorOnSurface,
+                                    fontSize: 14,
+                                  ),
+                                  decoration: _inputDecoration('••••••••')
+                                      .copyWith(
+                                        suffixIcon: IconButton(
+                                          icon: Icon(
+                                            _obscurePassword
+                                                ? Icons.visibility_off
+                                                : Icons.visibility,
+                                            color: _colorOnSurfaceVariant,
+                                            size: 20,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              _obscurePassword =
+                                                  !_obscurePassword;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                ),
+
+                                // Forgot Password Link
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: TextButton(
+                                    onPressed: () {
+                                      // Implementasi Lupa Password
+                                    },
+                                    style: TextButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 16,
+                                        horizontal: 0,
+                                      ),
+                                      minimumSize: Size.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                    child: Text(
+                                      'Lupa Kata Sandi?',
+                                      style: TextStyle(
+                                        fontFamily: 'Hanken Grotesk',
+                                        color: _colorPrimary,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // Bottom Action Section
+                        Column(
+                          children: [
+                            // Primary Button
+                            SizedBox(
+                              width: double.infinity,
+                              height: 50,
+                              child: ElevatedButton(
+                                onPressed: isLoading ? null : login,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: _colorPrimary,
+                                  foregroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                child: isLoading
+                                    ? const SizedBox(
+                                        width: 24,
+                                        height: 24,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 3,
+                                        ),
+                                      )
+                                    : const Text(
+                                        'Masuk Sekarang',
+                                        style: TextStyle(
+                                          fontFamily: 'Hanken Grotesk',
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Footer Link
+                            RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                text: 'Belum punya akun? ',
+                                style: TextStyle(
+                                  fontFamily: 'Hanken Grotesk',
+                                  color: _colorOnSurfaceVariant,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w400,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: 'Daftar di sini',
+                                    style: TextStyle(
+                                      fontFamily: 'Hanken Grotesk',
+                                      color: _colorPrimary,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const RegisterPage(),
+                                          ),
+                                        );
+                                      },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  // Helper Widget untuk Label Form
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Hanken Grotesk',
+        fontSize: 13,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 1.2,
+        color: _colorOnSurface,
+      ),
+    );
+  }
+
+  // Helper Widget untuk Input Decoration
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: TextStyle(
+        fontFamily: 'Hanken Grotesk',
+        color: _colorOnSurfaceVariant.withOpacity(0.5),
+        fontSize: 14,
+      ),
+      filled: true,
+      fillColor: _colorSageMint,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(8),
+        borderSide: BorderSide(color: _colorPrimary, width: 2),
       ),
     );
   }

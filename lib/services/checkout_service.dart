@@ -5,18 +5,12 @@ import 'midtrans_service.dart';
 import 'notification_service.dart';
 
 class CheckoutService {
-  final supabase =
-      Supabase.instance.client;
+  final supabase = Supabase.instance.client;
 
-  final cartService =
-      CartService();
+  final cartService = CartService();
 
-  final notifService =
-      NotificationService();
+  final notifService = NotificationService();
 
-  // ===================================
-  // PROSES ORDER YANG SUDAH DIBAYAR
-  // ===================================
   Future<void> processPaidOrder(
     String orderId,
   ) async {
@@ -27,15 +21,11 @@ class CheckoutService {
           .eq('id', orderId)
           .single();
 
-      // Sudah pernah diproses
-      if (order['order_status'] ==
-          'processed') {
+      if (order['order_status'] == 'processed') {
         return;
       }
 
-      // Belum dibayar
-      if (order['payment_status'] !=
-          'paid') {
+      if (order['payment_status'] != 'paid') {
         return;
       }
 
@@ -45,28 +35,22 @@ class CheckoutService {
           .eq('order_id', orderId);
 
       for (final item in items) {
-        final product =
-            await supabase
-                .from('products')
-                .select(
-                  'id, stok',
-                )
-                .eq(
-                  'id',
-                  item['product_id'],
-                )
-                .single();
+        final product = await supabase
+            .from('products')
+            .select(
+              'id, stok',
+            )
+            .eq(
+              'id',
+              item['product_id'],
+            )
+            .single();
 
-        final int stokSekarang =
-            (product['stok'] ?? 0)
-                .toInt();
+        final int stokSekarang = (product['stok'] ?? 0).toInt();
 
-        final int qty =
-            (item['qty'] ?? 0)
-                .toInt();
+        final int qty = (item['qty'] ?? 0).toInt();
 
-        final int stokBaru =
-            stokSekarang - qty;
+        final int stokBaru = stokSekarang - qty;
 
         await supabase
             .from('products')
@@ -78,22 +62,17 @@ class CheckoutService {
               item['product_id'],
             );
 
-        await notifService
-            .createNotification(
-          userId:
-              item['seller_id'],
-          title:
-              'Pembayaran Berhasil',
-          message:
-              'Pesanan telah dibayar dan siap diproses.',
+        await notifService.createNotification(
+          userId: item['seller_id'],
+          title: 'Pembayaran Berhasil',
+          message: 'Pesanan telah dibayar dan siap diproses.',
         );
       }
 
       await supabase
           .from('orders')
           .update({
-            'order_status':
-                'processed',
+            'order_status': 'processed',
           })
           .eq('id', orderId);
     } catch (e) {
@@ -103,9 +82,6 @@ class CheckoutService {
     }
   }
 
-  // ===================================
-  // UBAH STATUS MENJADI PAID
-  // ===================================
   Future<void> markOrderPaid(
     String orderId,
   ) async {
@@ -113,11 +89,8 @@ class CheckoutService {
       await supabase
           .from('orders')
           .update({
-            'payment_status':
-                'paid',
-            'paid_at':
-                DateTime.now()
-                    .toIso8601String(),
+            'payment_status': 'paid',
+            'paid_at': DateTime.now().toIso8601String(),
           })
           .eq('id', orderId);
 
@@ -132,34 +105,26 @@ class CheckoutService {
   }
 
   Future<void> checkPaymentStatus(
-  String orderId,
-) async {
-  try {
-    final result = await MidtransService()
-        .checkPaymentStatus(orderId);
-
-    final status =
-        result["transaction_status"];
-
-    if (status == "settlement" ||
-        status == "capture") {
-      await markOrderPaid(orderId);
-    }
-  } catch (e) {
-    throw Exception(
-      "Gagal cek pembayaran: $e",
-    );
-  }
-}
-
-  // ===================================
-  // CHECKOUT
-  // ===================================
-  Future<Map<String, dynamic>>
-      checkout() async {
+    String orderId,
+  ) async {
     try {
-      final user =
-          supabase.auth.currentUser;
+      final result = await MidtransService().checkPaymentStatus(orderId);
+
+      final status = result["transaction_status"];
+
+      if (status == "settlement" || status == "capture") {
+        await markOrderPaid(orderId);
+      }
+    } catch (e) {
+      throw Exception(
+        "Gagal cek pembayaran: $e",
+      );
+    }
+  }
+
+  Future<Map<String, dynamic>> checkout() async {
+    try {
+      final user = supabase.auth.currentUser;
 
       if (user == null) {
         throw Exception(
@@ -167,9 +132,7 @@ class CheckoutService {
         );
       }
 
-      final carts =
-          await cartService
-              .getCart();
+      final carts = await cartService.getCart();
 
       if (carts.isEmpty) {
         throw Exception(
@@ -181,173 +144,90 @@ class CheckoutService {
       int totalOngkir = 0;
 
       for (var item in carts) {
-        final int harga =
-            (item['products']
-                        ['harga'] ??
-                    0)
-                .toInt();
+        final int harga = (item['products']['harga'] ?? 0).toInt();
 
-        final int qty =
-            (item['qty'] ?? 0)
-                .toInt();
+        final int qty = (item['qty'] ?? 0).toInt();
 
-        final int ongkir =
-            (item['ongkir'] ??
-                    0)
-                .toInt();
+        final int ongkir = (item['ongkir'] ?? 0).toInt();
 
-        totalProduk +=
-            harga * qty;
+        totalProduk += harga * qty;
 
-        totalOngkir +=
-            ongkir;
+        totalOngkir += ongkir;
       }
 
-      final int adminFee =
-          (totalProduk * 0.1)
-              .round();
+      final int adminFee = (totalProduk * 0.1).round();
 
-      final int grandTotal =
-          totalProduk +
-              totalOngkir +
-              adminFee;
+      final int grandTotal = totalProduk + totalOngkir + adminFee;
 
-      // ===================================
-      // INSERT ORDER
-      // ===================================
+      final order = await supabase
+          .from('orders')
+          .insert({
+            'buyer_id': user.id,
+            'total': totalProduk,
+            'total_ongkir': totalOngkir,
+            'admin_fee': adminFee,
+            'grand_total': grandTotal,
+            'payment_status': 'pending',
+            'order_status': 'pending',
+          })
+          .select()
+          .single();
 
-      final order =
-          await supabase
-              .from('orders')
-              .insert({
-                'buyer_id':
-                    user.id,
-                'total':
-                    totalProduk,
-                'total_ongkir':
-                    totalOngkir,
-                'admin_fee':
-                    adminFee,
-                'grand_total':
-                    grandTotal,
-                'payment_status':
-                    'pending',
-                'order_status':
-                    'pending',
-              })
-              .select()
-              .single();
-
-      final String orderId =
-          order['id'];
-
-      // ===================================
-      // INSERT ORDER ITEMS
-      // ===================================
+      final String orderId = order['id'];
 
       for (var item in carts) {
-        final product =
-            item['products'];
+        final product = item['products'];
 
-        final String sellerId =
-            product['seller_id'];
+        final String sellerId = product['seller_id'];
 
-        final int harga =
-            (product['harga'] ??
-                    0)
-                .toInt();
+        final int harga = (product['harga'] ?? 0).toInt();
 
-        final int qty =
-            (item['qty'] ?? 0)
-                .toInt();
+        final int qty = (item['qty'] ?? 0).toInt();
 
-        await supabase
-            .from('order_items')
-            .insert({
-          'order_id':
-              orderId,
-          'seller_id':
-              sellerId,
-          'product_id':
-              product['id'],
-          'nama_produk':
-              product[
-                  'nama_produk'],
-          'image_url':
-              product[
-                  'image_url'],
+        await supabase .from('order_items').insert({
+          'order_id': orderId,
+          'seller_id': sellerId,
+          'product_id': product['id'],
+          'nama_produk': product['nama_produk'],
+          'image_url': product['image_url'],
           'qty': qty,
           'harga': harga,
-          'ongkir':
-              item['ongkir'] ??
-                  0,
-          'subtotal':
-              harga * qty,
+          'ongkir': item['ongkir'] ?? 0,
+          'subtotal': harga * qty,
         });
 
-        await notifService
-            .createNotification(
-          userId:
-              sellerId,
-          title:
-              'Pesanan Baru',
-          message:
-              'Produk Anda baru saja dipesan.',
+        await notifService.createNotification(
+          userId: sellerId,
+          title: 'Pesanan Baru',
+          message: 'Produk Anda baru saja dipesan.',
         );
       }
 
-      // ===================================
-      // MIDTRANS
-      // ===================================
-
-      final payment =
-          await MidtransService()
-              .createPayment(
+      final payment = await MidtransService().createPayment(
         orderId: orderId,
         amount: grandTotal,
       );
 
-      final String token =
-          payment['token']
-                  ?.toString() ??
-              '';
+      final String token = payment['token']?.toString() ?? '';
 
-      final String redirectUrl =
-          payment[
-                      'redirect_url']
-                  ?.toString() ??
-              '';
-
-      // ===================================
-      // SAVE TOKEN
-      // ===================================
+      final String redirectUrl = payment['redirect_url']?.toString() ?? '';
 
       await supabase
           .from('orders')
           .update({
-            'midtrans_order_id':
-                orderId,
-            'snap_token':
-                token,
-            'redirect_url':
-                redirectUrl,
+            'midtrans_order_id': orderId,
+            'snap_token': token,
+            'redirect_url': redirectUrl,
           })
           .eq(
             'id',
             orderId,
           );
 
-      // ===================================
-      // NOTIF BUYER
-      // ===================================
-
-      await notifService
-          .createNotification(
+      await notifService.createNotification(
         userId: user.id,
-        title:
-            'Checkout Berhasil',
-        message:
-            'Silakan lanjutkan pembayaran.',
+        title: 'Checkout Berhasil',
+        message: 'Silakan lanjutkan pembayaran.',
       );
 
       await supabase
@@ -361,8 +241,7 @@ class CheckoutService {
       return {
         'order_id': orderId,
         'token': token,
-        'redirect_url':
-            redirectUrl,
+        'redirect_url': redirectUrl,
       };
     } catch (e) {
       throw Exception(
