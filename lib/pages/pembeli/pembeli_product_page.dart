@@ -20,9 +20,8 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
   List products = [];
   bool isLoading = true;
 
-  // Mendefinisikan tema warna SMARTWASTE berbasis web mockup
-  final Color colorPrimary = const Color(0xff004e3b);
-  final Color colorOnPrimary = const Color(0xffffffff);
+  // Warna tema disesuaikan dengan Dashboard Pembeli (Primary Green: 0xFF236652)
+  final Color primaryGreen = const Color(0xFF236652);
   final Color colorBackground = const Color(0xfffcf9f8);
   final Color colorSurfaceContainerLowest = const Color(0xffffffff);
   final Color colorSurfaceContainerLow = const Color(0xfff6f3f2);
@@ -64,9 +63,7 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
     }
   }
 
-  Future<void> addCart(
-    dynamic product,
-  ) async {
+  Future<void> addCart(dynamic product) async {
     try {
       await cartService.addToCart(
         productId: product['id'],
@@ -77,9 +74,7 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-            'Berhasil tambah keranjang',
-          ),
+          content: Text('Berhasil tambah keranjang'),
         ),
       );
     } catch (e) {
@@ -87,44 +82,46 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            e.toString(),
-          ),
+          content: Text(e.toString()),
         ),
       );
     }
   }
 
   @override
-  Widget build(
-    BuildContext context,
-  ) {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: colorBackground,
       appBar: AppBar(
-        backgroundColor: colorSurfaceContainerLowest,
+        backgroundColor: primaryGreen, // Menggunakan warna primary
         elevation: 0,
         scrolledUnderElevation: 0,
-        // PERBAIKAN: Mematikan fungsi back otomatis bawaan Flutter
-        automaticallyImplyLeading: false, 
-        shape: Border(
-          bottom: BorderSide(
-            color: colorSurfaceVariant,
-            width: 1,
-          ),
-        ),
-        // PERBAIKAN: Tombol leading (arrow_back) DIHAPUS, diganti Padding agar judul sejajar rapi secara visual
-        title: const Padding(
-          padding: EdgeInsets.only(left: 8.0),
-          child: Text(
-            'SMARTWASTE',
-            style: TextStyle(
-              fontFamily: 'Hanken Grotesk',
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              color: Color(0xff1c1b1b),
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            // Ikon Logo sesuai permintaan
+            Container(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+              ),
+              child: ClipOval(
+                child: Icon(Icons.recycling, color: primaryGreen, size: 20),
+              ),
             ),
-          ),
+            const SizedBox(width: 12),
+            const Text(
+              "SMARTWASTE",
+              style: TextStyle(
+                fontFamily: 'Hanken Grotesk',
+                fontWeight: FontWeight.w800,
+                fontSize: 20,
+                color: Colors.white,
+              ),
+            ),
+          ],
         ),
         actions: [
           Stack(
@@ -138,18 +135,18 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
                     ),
                   );
                 },
-                icon: Icon(
+                icon: const Icon(
                   Icons.shopping_cart_outlined,
-                  color: colorOnSurface,
+                  color: Colors.white, // Warna ikon disesuaikan dengan latar AppBar
                 ),
               ),
               Positioned(
                 right: 6,
                 top: 6,
                 child: Container(
-                  padding: const EdgeInsets.all(2),
-                  decoration: BoxDecoration(
-                    color: colorError,
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    color: Colors.redAccent, // Warna badge agar kontras dengan hijau
                     shape: BoxShape.circle,
                   ),
                   constraints: const BoxConstraints(
@@ -157,7 +154,7 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
                     minHeight: 16,
                   ),
                   child: const Text(
-                    '2', // Mock static count dari mockup UI web
+                    '2',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 10,
@@ -175,7 +172,6 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Bagian Search & Filter Chips (Sesuai Struktur Mockup Web)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Container(
@@ -208,8 +204,6 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
               ),
             ),
           ),
-          
-          // Horizontal Chips Category Filter
           Container(
             height: 48,
             margin: const EdgeInsets.only(bottom: 16),
@@ -224,13 +218,11 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
               ],
             ),
           ),
-
-          // Main Content Area (Loading / Empty / Grid)
           Expanded(
             child: isLoading
                 ? Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(colorPrimary),
+                      valueColor: AlwaysStoppedAnimation<Color>(primaryGreen),
                     ),
                   )
                 : products.isEmpty
@@ -282,7 +274,6 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // Bagian Gambar Produk
                                   Expanded(
                                     child: Stack(
                                       children: [
@@ -306,28 +297,23 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
                                                   ),
                                                 ),
                                               ),
-                                        // Badge Status HABIS jika stok kosong
                                         if (isHabis)
                                           Container(
                                             color: Colors.black.withOpacity(0.2),
                                             child: Center(
                                               child: Container(
                                                 padding: const EdgeInsets.symmetric(
-                                                  horizontal: 12,
-                                                  vertical: 4,
-                                                ),
+                                                    horizontal: 12, vertical: 4),
                                                 decoration: BoxDecoration(
                                                   color: colorSurfaceVariant,
                                                   borderRadius:
                                                       BorderRadius.circular(99),
                                                 ),
-                                                child: Text(
+                                                child: const Text(
                                                   'HABIS',
                                                   style: TextStyle(
-                                                    fontFamily: 'Hanken Grotesk',
-                                                    fontSize: 11,
                                                     fontWeight: FontWeight.w800,
-                                                    color: colorOnSurfaceVariant,
+                                                    fontSize: 11,
                                                     letterSpacing: 1.2,
                                                   ),
                                                 ),
@@ -337,7 +323,6 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
                                       ],
                                     ),
                                   ),
-                                  // Informasi Produk & Action Button
                                   Padding(
                                     padding: const EdgeInsets.all(12.0),
                                     child: Column(
@@ -349,19 +334,14 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
                                           maxLines: 2,
                                           overflow: TextOverflow.ellipsis,
                                           style: TextStyle(
-                                            fontFamily: 'Hanken Grotesk',
                                             fontWeight: FontWeight.bold,
                                             fontSize: 14,
                                             color: colorOnSurface,
                                           ),
                                         ),
-                                        const SizedBox(height: 4),
                                         Text(
-                                          isHabis
-                                              ? 'Stok Kosong'
-                                              : 'Stok: $stok',
+                                          isHabis ? 'Stok Kosong' : 'Stok: $stok',
                                           style: TextStyle(
-                                            fontFamily: 'Hanken Grotesk',
                                             fontSize: 12,
                                             color: isHabis
                                                 ? colorError
@@ -369,61 +349,44 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
                                           ),
                                         ),
                                         const SizedBox(height: 8),
-                                        Container(
-                                          padding: const EdgeInsets.only(top: 8),
-                                          decoration: BoxDecoration(
-                                            border: Border(
-                                              top: BorderSide(
-                                                color: colorSurfaceVariant,
-                                                width: 0.5,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              'Rp ${product['harga']}',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 15,
+                                                color: isHabis
+                                                    ? colorOnSurfaceVariant
+                                                    : primaryGreen,
                                               ),
                                             ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Expanded(
-                                                child: Text(
-                                                  'Rp ${product['harga']}',
-                                                  style: TextStyle(
-                                                    fontFamily: 'Hanken Grotesk',
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 15,
-                                                    color: isHabis
-                                                        ? colorOnSurfaceVariant
-                                                        : colorPrimary,
-                                                  ),
+                                            InkWell(
+                                              onTap: isHabis
+                                                  ? null
+                                                  : () => addCart(product),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              child: Container(
+                                                width: 36,
+                                                height: 36,
+                                                decoration: BoxDecoration(
+                                                  color: isHabis
+                                                      ? colorSurfaceVariant
+                                                      : primaryGreen,
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                                child: const Icon(
+                                                  Icons.add_shopping_cart,
+                                                  size: 18,
+                                                  color: Colors.white,
                                                 ),
                                               ),
-                                              const SizedBox(width: 4),
-                                              InkWell(
-                                                onTap: isHabis
-                                                    ? null
-                                                    : () => addCart(product),
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                child: Container(
-                                                  width: 36,
-                                                  height: 36,
-                                                  decoration: BoxDecoration(
-                                                    color: isHabis
-                                                        ? colorSurfaceVariant
-                                                        : colorPrimary,
-                                                    borderRadius:
-                                                        BorderRadius.circular(8),
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.add_shopping_cart,
-                                                    size: 18,
-                                                    color: isHabis
-                                                        ? colorOnSurfaceVariant
-                                                        : colorOnPrimary,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
@@ -440,7 +403,6 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
     );
   }
 
-  // Widget pendukung untuk generate Chips Kategori secara rapi
   Widget _buildChip(String label, bool isActive) {
     return Container(
       margin: const EdgeInsets.only(right: 8),
@@ -449,17 +411,16 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
         selected: isActive,
         onSelected: (_) {},
         labelStyle: TextStyle(
-          fontFamily: 'Hanken Grotesk',
-          color: isActive ? colorOnPrimary : colorOnSurfaceVariant,
+          color: isActive ? Colors.white : colorOnSurfaceVariant,
           fontWeight: FontWeight.w500,
           fontSize: 13,
         ),
         backgroundColor: colorSurfaceContainerLow,
-        selectedColor: colorPrimary,
+        selectedColor: primaryGreen,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(99),
           side: BorderSide(
-            color: isActive ? colorPrimary : colorSurfaceVariant,
+            color: isActive ? primaryGreen : colorSurfaceVariant,
           ),
         ),
         showCheckmark: false,

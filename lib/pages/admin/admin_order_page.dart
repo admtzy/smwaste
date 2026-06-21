@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../../services/admin_order_service.dart';
 
 class AdminOrderPage extends StatefulWidget {
@@ -11,8 +10,10 @@ class AdminOrderPage extends StatefulWidget {
 
 class _AdminOrderPageState extends State<AdminOrderPage> {
   final service = AdminOrderService();
-
   late Future<List<dynamic>> futureOrder;
+  
+  // Warna konsisten dengan AdminProductPage
+  final Color primaryGreen = const Color(0xFF236652);
 
   @override
   void initState() {
@@ -31,48 +32,34 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
     }
   }
 
-  Widget textIfNotNull(String title, dynamic value) {
-    if (value == null) {
-      return const SizedBox();
-    }
-
-    if (value.toString().isEmpty) {
-      return const SizedBox();
-    }
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 3),
-      child: Text("$title$value"),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF7F9F7),
       appBar: AppBar(
-        title: const Text("Riwayat Transaksi"),
+        title: const Text(
+          "Riwayat Transaksi",
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+        backgroundColor: primaryGreen,
+        centerTitle: true,
+        elevation: 0,
       ),
       body: FutureBuilder<List<dynamic>>(
         future: futureOrder,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return Center(child: CircularProgressIndicator(color: primaryGreen));
           }
 
           if (snapshot.hasError) {
-            return Center(
-              child: Text(snapshot.error.toString()),
-            );
+            return Center(child: Text(snapshot.error.toString()));
           }
 
           final orders = snapshot.data ?? [];
 
           if (orders.isEmpty) {
-            return const Center(
-              child: Text("Belum ada transaksi"),
-            );
+            return const Center(child: Text("Belum ada transaksi"));
           }
 
           return RefreshIndicator(
@@ -81,89 +68,95 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                 futureOrder = service.getAllOrders();
               });
             },
+            color: primaryGreen,
             child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
               itemCount: orders.length,
-              // Di bagian _AdminOrderPageState, perbarui bagian itemBuilder:
-
               itemBuilder: (context, index) {
                 final order = orders[index];
                 final buyer = order["buyer"];
                 final List items = order["order_items"] ?? [];
 
                 return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.black.withOpacity(0.1)),
+                    side: BorderSide(color: Colors.grey.withOpacity(0.2), width: 1),
                   ),
+                  margin: const EdgeInsets.symmetric(vertical: 6),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Header: Order ID & Status
+                        // Header Order
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text("ORDER ID", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-                                Text("#${order["id"].toString().substring(0, 8)}", style: const TextStyle(fontFamily: 'monospace', fontWeight: FontWeight.bold)),
-                              ],
-                            ),
+                            Text("Order ID: ${order["id"]}", 
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                             Chip(
-                              backgroundColor: statusColor(order["payment_status"] ?? "").withOpacity(0.2),
+                              backgroundColor: statusColor(order["payment_status"] ?? ""),
                               label: Text(
                                 (order["payment_status"] ?? "").toUpperCase(),
-                                style: TextStyle(color: statusColor(order["payment_status"] ?? ""), fontSize: 10, fontWeight: FontWeight.bold),
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
                               ),
                             ),
                           ],
                         ),
                         const Divider(),
-                        
-                        // Buyer Info
-                        const Text("PEMBELI", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-                        Text(buyer?["nama"] ?? "-", style: const TextStyle(fontWeight: FontWeight.w500)),
-                        Text(buyer?["no_hp"] ?? "-", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                        Text(buyer?["alamat"] ?? "-", style: const TextStyle(fontSize: 12, color: Colors.grey)),
-                        
-                        const SizedBox(height: 12),
-                        
-                        // Seller Info
-                        const Text("PENJUAL (UMKM)", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-                        ...items.map((e) => Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Text(e["seller"]?["nama_umkm"] ?? "-", style: const TextStyle(fontWeight: FontWeight.w500)),
-                        )).toList(),
+
+                        // Section Pembeli
+                        const Text("PEMBELI", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF236652))),
+                        const SizedBox(height: 5),
+                        Text("Nama   : ${buyer?["nama"] ?? "-"}"),
+                        Text("Email  : ${buyer?["email"] ?? "-"}"),
+                        Text("No HP  : ${buyer?["no_hp"] ?? "-"}"),
+                        Text("Alamat : ${buyer?["alamat"] ?? "-"}"),
+
+                        const SizedBox(height: 15),
+
+                        // Section Penjual & Produk
+                        const Text("DETAIL PESANAN", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF236652))),
+                        const SizedBox(height: 5),
+                        ...items.map<Widget>((e) {
+                          final seller = e["seller"];
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 8),
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            width: double.infinity,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text("UMKM: ${seller?["nama_umkm"] ?? "-"}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                                Text("Produk: ${e["nama_produk"]}"),
+                                Text("Qty: ${e["qty"]} | Harga: Rp ${e["harga"]}"),
+                                Text("Subtotal: Rp ${e["subtotal"]}", style: const TextStyle(fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                          );
+                        }),
 
                         const Divider(),
 
-                        // Product Summary
-                        const Text("RINGKASAN PRODUK", style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey)),
-                        ...items.map((e) => Container(
-                          margin: const EdgeInsets.only(top: 4),
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(8)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(e["nama_produk"] ?? ""),
-                              Text("x ${e["qty"]}", style: const TextStyle(color: Colors.grey, fontSize: 12)),
-                            ],
-                          ),
-                        )).toList(),
-
-                        const SizedBox(height: 12),
-
-                        // Total
+                        // Footer Harga (Informasi Lengkap Dipertahankan)
+                        _buildPriceRow("Total Produk", "Rp ${order["total"]}"),
+                        _buildPriceRow("Ongkir", "Rp ${order["total_ongkir"]}"),
+                        _buildPriceRow("Admin Fee", "Rp ${order["admin_fee"]}"),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 8.0),
+                          child: Divider(thickness: 2),
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text("Total Harga", style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text("Rp ${order["grand_total"]}", style: const TextStyle(color: Color(0xFF004E3B), fontWeight: FontWeight.bold, fontSize: 16)),
+                            const Text("GRAND TOTAL", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            Text("Rp ${order["grand_total"]}", 
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green)),
                           ],
                         ),
                       ],
@@ -175,6 +168,16 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
           );
         },
       ),
+    );
+  }
+
+  Widget _buildPriceRow(String label, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(label),
+        Text(value),
+      ],
     );
   }
 }
