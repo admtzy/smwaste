@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../profile/edit_profile_page.dart';
-import 'cart_page.dart';
+// import 'cart_page.dart';
 import 'pembeli_product_page.dart';
 import 'my_order_page.dart';
 
@@ -24,7 +24,7 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
     super.initState();
     pages = [
       const PembeliProductPage(),
-      const CartPage(),
+      // const CartPage(),
       const MyOrderPage(),
       const EditProfilePage(),
     ];

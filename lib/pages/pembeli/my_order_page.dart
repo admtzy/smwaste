@@ -124,7 +124,6 @@ class _MyOrdersPageState extends State<MyOrderPage> with RouteAware {
       appBar: AppBar(
         backgroundColor: colorPrimary,
         elevation: 0,
-        // Baris ini yang menghilangkan tombol back secara otomatis
         automaticallyImplyLeading: false, 
         title: const Text(
           "SMARTWASTE",
