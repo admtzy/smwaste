@@ -54,10 +54,10 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
             icon: Icon(Icons.storefront),
             label: 'Produk',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart),
-            label: 'Keranjang',
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.shopping_cart),
+          //   label: 'Keranjang',
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt_long),
             label: 'Pesanan',

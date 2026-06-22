@@ -180,44 +180,44 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
                 color: colorSurfaceContainerLow,
                 borderRadius: BorderRadius.circular(10),
               ),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
-                children: [
-                  Icon(Icons.search, color: colorOnSurfaceVariant),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: "Cari produk ramah lingkungan...",
-                        hintStyle: TextStyle(
-                          fontFamily: 'Hanken Grotesk',
-                          color: colorOnSurfaceVariant.withOpacity(0.7),
-                          fontSize: 14,
-                        ),
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              // padding: const EdgeInsets.symmetric(horizontal: 16),
+              // child: Row(
+              //   children: [
+              //     Icon(Icons.search, color: colorOnSurfaceVariant),
+              //     const SizedBox(width: 8),
+              //     Expanded(
+              //       child: TextField(
+              //         decoration: InputDecoration(
+              //           hintText: "Cari produk ramah lingkungan...",
+              //           hintStyle: TextStyle(
+              //             fontFamily: 'Hanken Grotesk',
+              //             color: colorOnSurfaceVariant.withOpacity(0.7),
+              //             fontSize: 14,
+              //           ),
+              //           border: InputBorder.none,
+              //           isDense: true,
+              //           contentPadding: EdgeInsets.zero,
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
             ),
           ),
-          Container(
-            height: 48,
-            margin: const EdgeInsets.only(bottom: 16),
-            child: ListView(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              children: [
-                _buildChip('Semua', true),
-                _buildChip('Makanan Organik', false),
-                _buildChip('Daur Ulang', false),
-                _buildChip('Pupuk Kompos', false),
-              ],
-            ),
-          ),
+          // Container(
+          //   height: 48,
+          //   margin: const EdgeInsets.only(bottom: 16),
+          //   child: ListView(
+          //     scrollDirection: Axis.horizontal,
+          //     padding: const EdgeInsets.symmetric(horizontal: 16),
+          //     children: [
+          //       _buildChip('Semua', true),
+          //       _buildChip('Makanan Organik', false),
+          //       _buildChip('Daur Ulang', false),
+          //       _buildChip('Pupuk Kompos', false),
+          //     ],
+          //   ),
+          // ),
           Expanded(
             child: isLoading
                 ? Center(
@@ -403,28 +403,28 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
     );
   }
 
-  Widget _buildChip(String label, bool isActive) {
-    return Container(
-      margin: const EdgeInsets.only(right: 8),
-      child: ChoiceChip(
-        label: Text(label),
-        selected: isActive,
-        onSelected: (_) {},
-        labelStyle: TextStyle(
-          color: isActive ? Colors.white : colorOnSurfaceVariant,
-          fontWeight: FontWeight.w500,
-          fontSize: 13,
-        ),
-        backgroundColor: colorSurfaceContainerLow,
-        selectedColor: primaryGreen,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(99),
-          side: BorderSide(
-            color: isActive ? primaryGreen : colorSurfaceVariant,
-          ),
-        ),
-        showCheckmark: false,
-      ),
-    );
-  }
+  // Widget _buildChip(String label, bool isActive) {
+  //   return Container(
+  //     margin: const EdgeInsets.only(right: 8),
+  //     child: ChoiceChip(
+  //       label: Text(label),
+  //       selected: isActive,
+  //       onSelected: (_) {},
+  //       labelStyle: TextStyle(
+  //         color: isActive ? Colors.white : colorOnSurfaceVariant,
+  //         fontWeight: FontWeight.w500,
+  //         fontSize: 13,
+  //       ),
+  //       backgroundColor: colorSurfaceContainerLow,
+  //       selectedColor: primaryGreen,
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(99),
+  //         side: BorderSide(
+  //           color: isActive ? primaryGreen : colorSurfaceVariant,
+  //         ),
+  //       ),
+  //       showCheckmark: false,
+  //     ),
+  //   );
+  // }
 }

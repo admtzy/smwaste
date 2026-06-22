@@ -93,8 +93,16 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text("Order ID: ${order["id"]}", 
-                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            // Tambahkan Expanded agar teks menyesuaikan sisa ruang
+                            Expanded(
+                              child: Text(
+                                "Order ID: ${order["id"]}",
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                                overflow: TextOverflow.ellipsis, // Menambahkan titik-titik jika terlalu panjang
+                                maxLines: 1, // Memastikan teks hanya satu baris
+                              ),
+                            ),
+                            const SizedBox(width: 8), // Memberi jarak antara teks dan chip
                             Chip(
                               backgroundColor: statusColor(order["payment_status"] ?? ""),
                               label: Text(

@@ -353,50 +353,45 @@ class DetailProductPage extends StatelessWidget {
           ),
         ),
       ),
-      // ==========================================
-      // ACTION BUTTON (Fixed Bottom)
-      // ==========================================
-      // ==========================================
-// ACTION BUTTON (Fixed Bottom) - FIXED
-// ==========================================
-      bottomNavigationBar: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(
-            top: BorderSide(color: colorOutlineVariant.withOpacity(0.3)),
-          ),
-        ),
-        child: ElevatedButton(
-          onPressed: () {
-            // Logika cetak atau aksi lainnya
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: colorPrimary,
-            foregroundColor: Colors.white,
-            minimumSize: const Size(double.infinity, 50),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            elevation: 0,
-          ),
-          child: const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.print, size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Cetak Resi',
-                style: TextStyle(
-                  fontFamily: 'Hanken Grotesk',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+
+      // bottomNavigationBar: Container(
+      //   padding: const EdgeInsets.all(16),
+      //   decoration: BoxDecoration(
+      //     color: Colors.white,
+      //     border: Border(
+      //       top: BorderSide(color: colorOutlineVariant.withOpacity(0.3)),
+      //     ),
+      //   ),
+      //   // child: ElevatedButton(
+      //   //   onPressed: () {
+      //   //     // Logika cetak atau aksi lainnya
+      //   //   },
+      //   //   style: ElevatedButton.styleFrom(
+      //   //     backgroundColor: colorPrimary,
+      //   //     foregroundColor: Colors.white,
+      //   //     minimumSize: const Size(double.infinity, 50),
+      //   //     shape: RoundedRectangleBorder(
+      //   //       borderRadius: BorderRadius.circular(10),
+      //   //     ),
+      //   //     elevation: 0,
+      //   //   ),
+      //   //   child: const Row(
+      //   //     mainAxisAlignment: MainAxisAlignment.center,
+      //   //     children: [
+      //   //       Icon(Icons.print, size: 20),
+      //   //       SizedBox(width: 8),
+      //   //       Text(
+      //   //         'Cetak Resi',
+      //   //         style: TextStyle(
+      //   //           fontFamily: 'Hanken Grotesk',
+      //   //           fontWeight: FontWeight.bold,
+      //   //           fontSize: 16,
+      //   //         ),
+      //   //       ),
+      //   //     ],
+      //   //   ),
+      //   // ),
+      // ),
     );
   }
 
