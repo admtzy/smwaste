@@ -16,10 +16,6 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
 
   bool isLoading = true;
 
-  // =========================
-  // LOAD USERS
-  // =========================
-
   Future<void> loadUsers() async {
     final data = await accountService.getAllUsers();
 
@@ -29,20 +25,12 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
     });
   }
 
-  // =========================
-  // INIT
-  // =========================
-
   @override
   void initState() {
     super.initState();
 
     loadUsers();
   }
-
-  // =========================
-  // DELETE USER
-  // =========================
 
   Future<void> deleteUser(
     String id,
@@ -60,7 +48,6 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
     );
   }
 
-  // Helper untuk menampilkan dialog konfirmasi hapus user
   void showDeleteDialog(String id, String name) {
     showDialog(
       context: context,
@@ -91,16 +78,12 @@ class _ManageUsersPageState extends State<ManageUsersPage> {
     );
   }
 
-  // =========================
-  // UI
-  // =========================
-
   @override
   Widget build(BuildContext context) {
     const primaryGreen = Color(0xFF236652);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F7), // Background abu-hijau sangat bersih
+      backgroundColor: const Color(0xFFF7F9F7), 
       appBar: AppBar(
         title: const Text(
           "Kelola User",
