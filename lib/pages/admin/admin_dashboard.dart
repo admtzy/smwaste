@@ -59,10 +59,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
             icon: Icon(Icons.receipt_long),
             label: "Orders",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.person),
+          //   label: "Profile",
+          // ),
         ],
       ),
     );
