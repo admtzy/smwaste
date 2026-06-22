@@ -1,5 +1,11 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+
+import '../../services/profile_service.dart';
+
+import '../pembeli/pembeli_dashboard.dart';
+import '../penjual/penjual_dashboard.dart';
 
 class CompleteProfilePage extends StatefulWidget {
   const CompleteProfilePage({super.key});
@@ -9,38 +15,119 @@ class CompleteProfilePage extends StatefulWidget {
 }
 
 class _CompleteProfilePageState extends State<CompleteProfilePage> {
-  // Controller untuk menangkap input teks
-  final nameC = TextEditingController();
-  final phoneC = TextEditingController();
-  final addressC = TextEditingController();
-  final umkmNameC = TextEditingController();
-  final accountNoC = TextEditingController();
+  final profileService = ProfileService();
+  final namaC = TextEditingController();
+  final alamatC = TextEditingController();
+  final noHpC = TextEditingController();
+  final namaUmkmC = TextEditingController();
+  final kecamatanC = TextEditingController();
+  final kabupatenC = TextEditingController();
+  final danaC = TextEditingController();
+  final shopeeC = TextEditingController();
+  final bankC = TextEditingController();
+  final rekeningC = TextEditingController();
+  final pemilikRekeningC = TextEditingController();
 
-  // Variabel untuk menyimpan nilai Dropdown/Pilihan
-  String? selectedCategory;
-  String? selectedPaymentMethod;
-  File? profileImage; // Menyimpan file gambar jika nanti diintegrasikan dengan image_picker
+  String kategori = 'FNB';
+  String role = '';
+  String metodePencairan = 'DANA';
   bool isLoading = false;
+  XFile? image;
+
+  final Color _colorPrimary = const Color(0xFF276955);
+  final Color _colorSecondaryContainer = const Color(
+    0xFFd5e7da,
+  );
+  final Color _colorSurface = const Color(0xFFfcf9f8);
+  final Color _colorOnSurface = const Color(0xFF1c1b1b);
+  final Color _colorOnSurfaceVariant = const Color(0xFF3f4944);
 
   @override
-  void dispose() {
-    nameC.dispose();
-    phoneC.dispose();
-    addressC.dispose();
-    umkmNameC.dispose();
-    accountNoC.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    loadRole();
   }
 
-  // Fungsi aksi tombol simpan
-  void saveProfile() {
+  Future<void> loadRole() async {
+    final profile = await profileService.getProfile();
+    if (profile != null) {
+      setState(() {
+        role = profile['role'];
+      });
+    }
+  }
+
+  Future<void> pickImage() async {
+    final picker = ImagePicker();
+    image = await picker.pickImage(source: ImageSource.gallery);
+    setState(() {});
+  }
+
+  Future<void> saveProfile() async {
+    if (namaC.text.isEmpty ||
+        alamatC.text.isEmpty ||
+        noHpC.text.isEmpty ||
+        kecamatanC.text.isEmpty ||
+        kabupatenC.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pastikan semua data wajib terisi')),
+      );
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
 
-    // TODO: Masukkan logika integrasi database / API Anda di sini
-    // Contoh:
-    // await profileService.save(name: nameC.text, ...);
+    try {
+      String imageUrl = '';
+      if (image != null) {
+        imageUrl = await profileService.uploadImage(image!);
+      }
+
+      await profileService.completeProfile(
+        nama: namaC.text.trim(),
+        alamat: alamatC.text.trim(),
+        noHp: noHpC.text.trim(),
+
+        namaUmkm: role == 'penjual' ? namaUmkmC.text.trim() : null,
+        kategoriUmkm: role == 'penjual' ? kategori : null,
+
+        kecamatan: kecamatanC.text.trim(),
+        kabupaten: kabupatenC.text.trim(),
+
+        metodePencairan: role == 'penjual' ? metodePencairan : null,
+        nomorDana: metodePencairan == 'DANA' ? danaC.text.trim() : null,
+        nomorShopeepay: metodePencairan == 'ShopeePay'
+            ? shopeeC.text.trim()
+            : null,
+        namaBank: metodePencairan == 'Bank' ? bankC.text.trim() : null,
+        nomorRekening: metodePencairan == 'Bank' ? rekeningC.text.trim() : null,
+        namaPemilikRekening: metodePencairan == 'Bank'
+            ? pemilikRekeningC.text.trim()
+            : null,
+
+        fotoProfile: imageUrl,
+      );
+
+      if (!mounted) return;
+
+      if (role == 'penjual') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const PenjualDashboard()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const PembeliDashboard()),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    }
 
     setState(() {
       isLoading = false;
@@ -48,316 +135,369 @@ class _CompleteProfilePageState extends State<CompleteProfilePage> {
   }
 
   @override
+  void dispose() {
+    namaC.dispose();
+    alamatC.dispose();
+    noHpC.dispose();
+    namaUmkmC.dispose();
+    kecamatanC.dispose();
+    kabupatenC.dispose();
+    danaC.dispose();
+    shopeeC.dispose();
+    bankC.dispose();
+    rekeningC.dispose();
+    pemilikRekeningC.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // Definisi Palet Warna sesuai HTML SMARTWASTE
-    const primaryGreen = Color(0xFF004E3B);
-    const onPrimary = Color(0xFFFFFFFF);
-    const onSurface = Color(0xFF1C1B1B);
-    const onSurfaceVariant = Color(0xFF3F4944);
-    const secondaryContainer = Color(0xFFD5E7DA);
-
     return Scaffold(
-      backgroundColor: primaryGreen,
-      // 1. TopAppBar (Shared Component di HTML)
+      backgroundColor: _colorSurface,
       appBar: AppBar(
-        backgroundColor: primaryGreen,
+        backgroundColor: _colorSurface,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: onPrimary),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: const Text(
-          "SMARTWASTE",
-          style: TextStyle(
-            color: onPrimary,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
         centerTitle: true,
-      ),
-      // 2. Sliding Sheet Layout (Kontainer Putih Melengkung)
-      body: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.only(top: 16),
-        decoration: const BoxDecoration(
-          color: Color(0xFFFFFFFF), // surface-container-lowest
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
+        title: Text(
+          'Lengkapi Profil',
+          style: TextStyle(
+            fontFamily: 'Hanken Grotesk',
+            color: _colorOnSurface,
+            fontSize: 20,
+            fontWeight: FontWeight.w700,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black12,
-              blurRadius: 24,
-              offset: Offset(0, -4),
-            )
-          ],
         ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24),
-            topRight: Radius.circular(24),
-          ),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header Section
-                const Text(
-                  "Lengkapi Profil",
-                  style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    color: primaryGreen,
-                  ),
+      ),
+      body: role.isEmpty
+          ? Center(child: CircularProgressIndicator(color: _colorPrimary))
+          : SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24.0,
+                  vertical: 16.0,
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  "Langkah terakhir untuk mulai mengelola limbah UMKM Anda dengan cerdas.",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 32),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Silakan lengkapi data diri Anda untuk menyelesaikan pendaftaran.',
+                      style: TextStyle(
+                        fontFamily: 'Hanken Grotesk',
+                        color: _colorOnSurfaceVariant,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
 
-                // Avatar Upload Section
-                Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      // Jalankan fungsi pick image di sini nanti
-                    },
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 96,
-                          height: 96,
-                          decoration: const BoxDecoration(
-                            color: secondaryContainer,
-                            shape: BoxShape.circle,
-                          ),
-                          child: profileImage != null
-                              ? ClipRRect(
-                                  borderRadius: BorderRadius.circular(48),
-                                  child: Image.file(profileImage!, fit: BoxFit.cover),
-                                )
-                              : const Icon(
-                                  Icons.add_a_photo_outlined,
-                                  size: 40,
-                                  color: primaryGreen,
+                    Center(
+                      child: GestureDetector(
+                        onTap: pickImage,
+                        child: Stack(
+                          children: [
+                            Container(
+                              width: 100,
+                              height: 100,
+                              decoration: BoxDecoration(
+                                color: _colorSecondaryContainer,
+                                shape: BoxShape.circle,
+                                image: image != null
+                                    ? DecorationImage(
+                                        image: FileImage(File(image!.path)),
+                                        fit: BoxFit.cover,
+                                      )
+                                    : null,
+                              ),
+                              child: image == null
+                                  ? Icon(
+                                      Icons.person,
+                                      size: 50,
+                                      color: _colorPrimary.withOpacity(0.5),
+                                    )
+                                  : null,
+                            ),
+                            Positioned(
+                              bottom: 0,
+                              right: 0,
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: _colorPrimary,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
                                 ),
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        const Text(
-                          "PILIH FOTO PROFIL",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                            letterSpacing: 1.2,
-                            color: primaryGreen,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+
+                    _buildSectionTitle('Informasi Pribadi'),
+                    _buildTextField(
+                      label: 'NAMA LENGKAP',
+                      hint: 'Masukkan nama Anda',
+                      controller: namaC,
+                    ),
+                    _buildTextField(
+                      label: 'NOMOR HP',
+                      hint: 'Cth. 08123456789',
+                      controller: noHpC,
+                      isNumber: true,
+                    ),
+                    const SizedBox(height: 16),
+
+                    _buildSectionTitle('Alamat Pengiriman / Usaha'),
+                    _buildTextField(
+                      label: 'ALAMAT LENGKAP',
+                      hint: 'Nama jalan, gedung, no. rumah',
+                      controller: alamatC,
+                    ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildTextField(
+                            label: 'KECAMATAN',
+                            hint: 'Cth. Kebayoran',
+                            controller: kecamatanC,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: _buildTextField(
+                            label: 'KOTA / KAB',
+                            hint: 'Cth. Jakarta',
+                            controller: kabupatenC,
                           ),
                         ),
                       ],
                     ),
-                  ),
-                ),
-                const SizedBox(height: 32),
+                    const SizedBox(height: 16),
 
-                // FORM FIELDS
-                // Nama Lengkap
-                buildLabel("Nama Lengkap", onSurfaceVariant),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: nameC,
-                  style: const TextStyle(color: onSurface),
-                  decoration: buildInputDecoration("Masukkan nama sesuai KTP", secondaryContainer, onSurfaceVariant),
-                ),
-                const SizedBox(height: 24),
+                    if (role == 'penjual') ...[
+                      _buildSectionTitle('Detail UMKM (Khusus Penjual)'),
+                      _buildTextField(
+                        label: 'NAMA UMKM',
+                        hint: 'Masukkan nama usaha Anda',
+                        controller: namaUmkmC,
+                      ),
 
-                // Nomor HP
-                buildLabel("Nomor HP", onSurfaceVariant),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: phoneC,
-                  keyboardType: TextInputType.phone,
-                  style: const TextStyle(color: onSurface),
-                  decoration: buildInputDecoration("81234567890", secondaryContainer, onSurfaceVariant).copyWith(
-                    prefixIcon: const Padding(
-                      padding: EdgeInsets.only(left: 16, right: 8),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "+62",
-                            style: TextStyle(color: onSurfaceVariant, fontSize: 14),
+                      _buildLabel('KATEGORI UMKM'),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<String>(
+                        value: kategori,
+                        icon: Icon(
+                          Icons.expand_more,
+                          color: _colorOnSurfaceVariant,
+                        ),
+                        dropdownColor: Colors.white,
+                        decoration: _inputDecoration('Pilih Kategori'),
+                        items: const [
+                          DropdownMenuItem(
+                            value: 'FNB',
+                            child: Text('Food & Beverage (F&B)'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'Industri Kreatif',
+                            child: Text('Industri Kreatif'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'Fashion',
+                            child: Text('Fashion & Pakaian'),
                           ),
                         ],
+                        onChanged: (val) => setState(() => kategori = val!),
                       ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-                // Alamat Rumah
-                buildLabel("Alamat Rumah", onSurfaceVariant),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: addressC,
-                  maxLines: 3,
-                  style: const TextStyle(color: onSurface),
-                  decoration: buildInputDecoration("Masukkan alamat lengkap", secondaryContainer, onSurfaceVariant),
-                ),
-                const SizedBox(height: 24),
-
-                // Divider Pemisah Informasi Pribadi & Usaha
-                const Divider(color: Color(0x4D707974), height: 32),
-
-                // Nama UMKM
-                buildLabel("Nama UMKM", onSurfaceVariant),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: umkmNameC,
-                  style: const TextStyle(color: onSurface),
-                  decoration: buildInputDecoration("Nama usaha Anda", secondaryContainer, onSurfaceVariant),
-                ),
-                const SizedBox(height: 24),
-
-                // Kategori UMKM
-                buildLabel("Kategori UMKM", onSurfaceVariant),
-                const SizedBox(height: 8),
-                DropdownButtonFormField<String>(
-                  value: selectedCategory,
-                  dropdownColor: Colors.white,
-                  hint: Text(
-                    "Pilih Kategori",
-                    style: TextStyle(color: onSurfaceVariant.withOpacity(0.5), fontSize: 14),
-                  ),
-                  icon: const Icon(Icons.expand_more, color: onSurfaceVariant),
-                  decoration: buildInputDecoration("", secondaryContainer, onSurfaceVariant).copyWith(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
-                  items: ['Makanan', 'Minuman', 'Fashion'].map((String category) {
-                    return DropdownMenuItem<String>(
-                      value: category.toLowerCase(),
-                      child: Text(category, style: const TextStyle(color: onSurface)),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCategory = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                // Metode Pencairan
-                buildLabel("Metode Pencairan", onSurfaceVariant),
-                const SizedBox(height: 8),
-                DropdownButtonFormField<String>(
-                  value: selectedPaymentMethod,
-                  dropdownColor: Colors.white,
-                  hint: Text(
-                    "Pilih Metode",
-                    style: TextStyle(color: onSurfaceVariant.withOpacity(0.5), fontSize: 14),
-                  ),
-                  icon: const Icon(Icons.expand_more, color: onSurfaceVariant),
-                  decoration: buildInputDecoration("", secondaryContainer, onSurfaceVariant).copyWith(
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                  ),
-                  items: [
-                    const DropdownMenuItem(value: 'dana', child: Text('DANA', style: TextStyle(color: onSurface))),
-                    const DropdownMenuItem(value: 'bank', child: Text('Rekening Bank', style: TextStyle(color: onSurface))),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedPaymentMethod = value;
-                    });
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                // Nomor Rekening / DANA
-                buildLabel("Nomor Rekening / DANA", onSurfaceVariant),
-                const SizedBox(height: 8),
-                TextField(
-                  controller: accountNoC,
-                  keyboardType: TextInputType.number,
-                  style: const TextStyle(color: onSurface),
-                  decoration: buildInputDecoration("Masukkan nomor", secondaryContainer, onSurfaceVariant),
-                ),
-                const SizedBox(height: 35),
-
-                // Primary Action Button (Simpan & Lanjutkan)
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: isLoading ? null : saveProfile,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryGreen,
-                      foregroundColor: onPrimary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: isLoading
-                        ? const SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: CircularProgressIndicator(color: onPrimary, strokeWidth: 2),
-                          )
-                        : const Text(
-                            "Simpan & Lanjutkan",
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      _buildSectionTitle('Pengaturan Pencairan Dana'),
+                      _buildLabel('METODE PENCAIRAN'),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<String>(
+                        value: metodePencairan,
+                        icon: Icon(
+                          Icons.expand_more,
+                          color: _colorOnSurfaceVariant,
+                        ),
+                        dropdownColor: Colors.white,
+                        decoration: _inputDecoration('Pilih Metode'),
+                        items: const [
+                          DropdownMenuItem(value: 'DANA', child: Text('DANA')),
+                          DropdownMenuItem(
+                            value: 'ShopeePay',
+                            child: Text('ShopeePay'),
                           ),
-                  ),
+                          DropdownMenuItem(
+                            value: 'Bank',
+                            child: Text('Transfer Bank'),
+                          ),
+                        ],
+                        onChanged: (val) =>
+                            setState(() => metodePencairan = val!),
+                      ),
+                      const SizedBox(height: 16),
+
+                      if (metodePencairan == 'DANA')
+                        _buildTextField(
+                          label: 'NOMOR DANA',
+                          hint: 'Masukkan nomor DANA',
+                          controller: danaC,
+                          isNumber: true,
+                        ),
+
+                      if (metodePencairan == 'ShopeePay')
+                        _buildTextField(
+                          label: 'NOMOR SHOPEEPAY',
+                          hint: 'Masukkan nomor ShopeePay',
+                          controller: shopeeC,
+                          isNumber: true,
+                        ),
+
+                      if (metodePencairan == 'Bank') ...[
+                        _buildTextField(
+                          label: 'NAMA BANK',
+                          hint: 'Cth. BCA, Mandiri, BNI',
+                          controller: bankC,
+                        ),
+                        _buildTextField(
+                          label: 'NOMOR REKENING',
+                          hint: 'Masukkan nomor rekening',
+                          controller: rekeningC,
+                          isNumber: true,
+                        ),
+                        _buildTextField(
+                          label: 'NAMA PEMILIK REKENING',
+                          hint: 'Sesuai buku tabungan',
+                          controller: pemilikRekeningC,
+                        ),
+                      ],
+                    ],
+
+                    const SizedBox(height: 40),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : saveProfile,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: _colorPrimary,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: isLoading
+                            ? const SizedBox(
+                                width: 24,
+                                height: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 3,
+                                ),
+                              )
+                            : const Text(
+                                "Simpan Profil",
+                                style: TextStyle(
+                                  fontFamily: 'Hanken Grotesk',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                  ],
                 ),
-                const SizedBox(height: 24),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 
-  // Helper Widget untuk membuat Label Huruf Kapital bergaya Material Design
-  Widget buildLabel(String text, Color color) {
+  Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4),
+      padding: const EdgeInsets.only(bottom: 16.0),
       child: Text(
-        text.toUpperCase(),
+        title,
         style: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w800,
-          letterSpacing: 1.2,
-          color: color,
+          fontFamily: 'Hanken Grotesk',
+          color: _colorPrimary,
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
   }
 
-  // Helper untuk konfigurasi style background form input field
-  InputDecoration buildInputDecoration(String hint, Color fillColor, Color focusColor) {
+  Widget _buildTextField({
+    required String label,
+    required String hint,
+    required TextEditingController controller,
+    bool isNumber = false,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildLabel(label),
+          const SizedBox(height: 8),
+          TextField(
+            controller: controller,
+            keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+            style: TextStyle(
+              fontFamily: 'Hanken Grotesk',
+              color: _colorOnSurface,
+              fontSize: 14,
+            ),
+            decoration: _inputDecoration(hint),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLabel(String text) {
+    return Text(
+      text,
+      style: TextStyle(
+        fontFamily: 'Hanken Grotesk',
+        fontSize: 12,
+        fontWeight: FontWeight.w800,
+        letterSpacing: 1.2,
+        color: _colorOnSurfaceVariant,
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: TextStyle(color: focusColor.withOpacity(0.5), fontSize: 14),
+      hintStyle: TextStyle(
+        fontFamily: 'Hanken Grotesk',
+        color: _colorOnSurfaceVariant.withOpacity(0.5),
+        fontSize: 14,
+      ),
       filled: true,
-      fillColor: fillColor,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      fillColor: _colorSecondaryContainer,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFF004E3B), width: 2),
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: _colorPrimary, width: 2),
       ),
     );
   }

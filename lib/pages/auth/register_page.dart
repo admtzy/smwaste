@@ -12,31 +12,22 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  // ==========================================
-  // 1. BAGIAN LOGIKA
-  // ==========================================
   final authService = AuthService();
-
-  // Controller bawaan
   final emailC = TextEditingController();
   final passwordC = TextEditingController();
-
-  // Controller tambahan untuk menyesuaikan UI Baru
   final nameC = TextEditingController();
   final confirmPasswordC = TextEditingController();
 
   bool isLoading = false;
   String role = 'pembeli';
 
-  // State untuk UI Baru
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _acceptTerms = false;
 
-  // Warna khusus berdasarkan spesifikasi desain UI Baru
-  final Color _colorPrimary = const Color(0xFF276955); // Forest Pine
-  final Color _colorSageMint = const Color(0xFFd5e7da); // Sage Mint
-  final Color _colorSurface = const Color(0xFFfcf9f8); // Eco Canvas
+  final Color _colorPrimary = const Color(0xFF276955);
+  final Color _colorSageMint = const Color(0xFFd5e7da);
+  final Color _colorSurface = const Color(0xFFfcf9f8);
   final Color _colorOnSurface = const Color(0xFF1c1b1b);
   final Color _colorOnSurfaceVariant = const Color(0xFF3f4944);
 
@@ -50,19 +41,16 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   Future<void> register() async {
-    // Validasi Form
     if (emailC.text.isEmpty || passwordC.text.isEmpty) {
       _showSnackBar('Email dan Password wajib diisi');
       return;
     }
 
-    // Validasi Konfirmasi Password (Sesuai UI Baru)
     if (passwordC.text != confirmPasswordC.text) {
       _showSnackBar('Konfirmasi Password tidak cocok');
       return;
     }
 
-    // Validasi Syarat & Ketentuan (Sesuai UI Baru)
     if (!_acceptTerms) {
       _showSnackBar('Anda harus menyetujui Syarat & Ketentuan');
       return;
@@ -102,9 +90,6 @@ class _RegisterPageState extends State<RegisterPage> {
     ).showSnackBar(SnackBar(content: Text(message)));
   }
 
-  // ==========================================
-  // 2. BAGIAN UI BARU
-  // ==========================================
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -113,7 +98,6 @@ class _RegisterPageState extends State<RegisterPage> {
         bottom: false,
         child: Column(
           children: [
-            // Header Area: Brand Logo (Kecil di atas saat form panjang)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 24.0),
               child: Column(
@@ -134,11 +118,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     padding: const EdgeInsets.all(3),
                     margin: const EdgeInsets.only(bottom: 12),
-                    // === KODE LOGO BARU ===
                     child: ClipOval(
                       child: Image.asset('assets/images/logo.jpg', fit: BoxFit.cover),
                     ),
-                    // ======================
                   ),
                   const Text(
                     'SMARTWASTE',
@@ -154,7 +136,6 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             ),
 
-            // Sliding Sheet Form
             Expanded(
               child: Container(
                 width: double.infinity,
@@ -182,7 +163,6 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // Sheet Handle
                       Center(
                         child: Container(
                           width: 48,
@@ -195,7 +175,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
 
-                      // Header Text
                       Text(
                         'Daftar Akun',
                         textAlign: TextAlign.center,
@@ -220,7 +199,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 32),
 
-                      // Role Selection Segmented Control
                       _buildLabel('PILIH PERAN'),
                       const SizedBox(height: 8),
                       Container(
@@ -308,7 +286,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Input Nama Lengkap (Hanya visual tambahan UI)
                       _buildLabel('NAMA LENGKAP'),
                       const SizedBox(height: 8),
                       TextField(
@@ -322,7 +299,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Input Email
                       _buildLabel('EMAIL'),
                       const SizedBox(height: 8),
                       TextField(
@@ -337,7 +313,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Input Password
                       _buildLabel('PASSWORD'),
                       const SizedBox(height: 8),
                       TextField(
@@ -365,7 +340,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 16),
 
-                      // Input Konfirmasi Password
                       _buildLabel('KONFIRMASI PASSWORD'),
                       const SizedBox(height: 8),
                       TextField(
@@ -394,7 +368,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Terms & Conditions Checkbox
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -451,8 +424,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         ],
                       ),
                       const SizedBox(height: 32),
-
-                      // Register Button
                       SizedBox(
                         width: double.infinity,
                         height: 50,
@@ -487,7 +458,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       const SizedBox(height: 24),
 
-                      // Footer Link to Login
                       RichText(
                         textAlign: TextAlign.center,
                         text: TextSpan(
@@ -530,7 +500,6 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // Helper Widget: Label Form
   Widget _buildLabel(String text) {
     return Text(
       text,
@@ -544,7 +513,6 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  // Helper Widget: Input Decoration
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,

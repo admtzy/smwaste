@@ -112,12 +112,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
       await Future.delayed(const Duration(milliseconds: 500));
 
       if (!mounted) return;
-
-      // PERBAIKAN: Jika di dashboard, cukup muat ulang data atau arahkan kembali ke route utama
       if (Navigator.canPop(context)) {
         Navigator.pop(context, true);
       } else {
-        loadProfile(); // Tetap di halaman dan segarkan data baru
+        loadProfile();
       }
     } catch (e) {
       if (!mounted) return;
@@ -222,9 +220,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       appBar: AppBar(
         backgroundColor: colorSurface,
         elevation: 0,
-        // PERBAIKAN: Tombol leading (back button) dan otomatisasi bawaan dihapus
         automaticallyImplyLeading: false,
-        // Memberikan padding kiri agar teks judul sejajar rapi secara visual di dashboard
         title: const Padding(
           padding: EdgeInsets.only(left: 8.0),
           child: Text(

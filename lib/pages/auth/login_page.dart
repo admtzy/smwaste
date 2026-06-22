@@ -19,22 +19,17 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // ==========================================
-  // 1. BAGIAN LOGIKA (TIDAK ADA YANG BERUBAH)
-  // ==========================================
   final authService = AuthService();
   final profileService = ProfileService();
-
   final emailC = TextEditingController();
   final passwordC = TextEditingController();
 
   bool isLoading = false;
   bool _obscurePassword = true;
 
-  // Warna khusus berdasarkan spesifikasi desain UI Baru
-  final Color _colorPrimary = const Color(0xFF276955); // Forest Pine
-  final Color _colorSageMint = const Color(0xFFd5e7da); // Sage Mint untuk input
-  final Color _colorSurface = const Color(0xFFfcf9f8); // Eco Canvas
+  final Color _colorPrimary = const Color(0xFF276955);
+  final Color _colorSageMint = const Color(0xFFd5e7da);
+  final Color _colorSurface = const Color(0xFFfcf9f8);
   final Color _colorOnSurface = const Color(0xFF1c1b1b);
   final Color _colorOnSurfaceVariant = const Color(0xFF3f4944);
 
@@ -68,7 +63,6 @@ class _LoginPageState extends State<LoginPage> {
 
       if (!mounted) return;
 
-      // Routing berdasarkan Role
       if (role == 'admin') {
         Navigator.pushReplacement(
           context,
@@ -103,12 +97,8 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  // ==========================================
-  // 2. BAGIAN UI BARU (SESUAI GAMBAR & HTML)
-  // ==========================================
   @override
   Widget build(BuildContext context) {
-    // Mendapatkan tinggi layar untuk membagi proporsi 30% dan 70%
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -118,7 +108,6 @@ class _LoginPageState extends State<LoginPage> {
           height: screenHeight,
           child: Column(
             children: [
-              // Top Area: Brand Logo (Tinggi 30%)
               SizedBox(
                 height: screenHeight * 0.3,
                 child: Column(
@@ -138,16 +127,14 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ],
                       ),
-                      padding: const EdgeInsets.all(4), // Padding diperkecil
+                      padding: const EdgeInsets.all(4),
                       margin: const EdgeInsets.only(bottom: 16),
-                      // === KODE LOGO BARU ===
                       child: ClipOval(
                         child: Image.asset(
                           'assets/images/logo.jpg',
                           fit: BoxFit.cover,
                         ),
                       ),
-                      // ======================
                     ),
                     const Text(
                       'SMARTWASTE',
@@ -163,7 +150,6 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
-              // Sliding Sheet / White Card Form (Tinggi 70%)
               Expanded(
                 child: Container(
                   width: double.infinity,
@@ -191,7 +177,6 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        // Header Text
                         Text(
                           'Masuk Akun',
                           textAlign: TextAlign.center,
@@ -216,13 +201,11 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         const SizedBox(height: 32),
 
-                        // Form Elements
                         Expanded(
                           child: SingleChildScrollView(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Email Input
                                 _buildLabel('EMAIL'),
                                 const SizedBox(height: 8),
                                 TextField(
@@ -239,7 +222,6 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                                 const SizedBox(height: 16),
 
-                                // Password Input
                                 _buildLabel('PASSWORD'),
                                 const SizedBox(height: 8),
                                 TextField(
@@ -270,12 +252,10 @@ class _LoginPageState extends State<LoginPage> {
                                       ),
                                 ),
 
-                                // Forgot Password Link
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: TextButton(
                                     onPressed: () {
-                                      // Implementasi Lupa Password
                                     },
                                     style: TextButton.styleFrom(
                                       padding: const EdgeInsets.symmetric(
@@ -302,10 +282,8 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
 
-                        // Bottom Action Section
                         Column(
                           children: [
-                            // Primary Button
                             SizedBox(
                               width: double.infinity,
                               height: 50,
@@ -340,7 +318,6 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             const SizedBox(height: 24),
 
-                            // Footer Link
                             RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(
@@ -387,7 +364,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Helper Widget untuk Label Form
   Widget _buildLabel(String text) {
     return Text(
       text,
@@ -401,7 +377,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Helper Widget untuk Input Decoration
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,

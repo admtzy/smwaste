@@ -14,7 +14,6 @@ class _CartPageState extends State<CartPage> {
   List carts = [];
   bool isLoading = true;
 
-  // Palette warna SMARTWASTE sesuai mockup HTML
   final Color colorPrimary = const Color(0xff004e3b);
   final Color colorBackground = const Color(0xfffcf9f8);
   final Color colorSurfaceContainerLowest = const Color(0xffffffff);
@@ -49,9 +48,6 @@ class _CartPageState extends State<CartPage> {
     }
   }
 
-  // =========================
-  // LOGIKA PERHITUNGAN (TETAP DART)
-  // =========================
   double get total {
     double result = 0;
     for (var item in carts) {
@@ -70,7 +66,7 @@ class _CartPageState extends State<CartPage> {
   }
 
   double get adminFee {
-    return (total * 0.1).roundToDouble(); // Biaya admin 10%
+    return (total * 0.1).roundToDouble();
   }
 
   double get grandTotal {
@@ -100,7 +96,6 @@ class _CartPageState extends State<CartPage> {
       appBar: AppBar(
         backgroundColor: colorSurfaceContainerLowest,
         elevation: 0,
-        // PERBAIKAN: Hanya munculkan tombol back jika halaman ini dibuka via Navigator.push
         automaticallyImplyLeading: Navigator.canPop(context),
         leading: Navigator.canPop(context)
             ? IconButton(
@@ -128,7 +123,6 @@ class _CartPageState extends State<CartPage> {
                 )
               : Column(
                   children: [
-                    // List Item di Keranjang
                     Expanded(
                       child: ListView.builder(
                         padding: const EdgeInsets.all(16),
@@ -150,7 +144,6 @@ class _CartPageState extends State<CartPage> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                // Thumbnail Gambar Produk
                                 Container(
                                   width: 80,
                                   height: 80,
@@ -171,7 +164,7 @@ class _CartPageState extends State<CartPage> {
                                           color: colorOnSurfaceVariant),
                                 ),
                                 const SizedBox(width: 16),
-                                // Rincian Item (Sesuai Visual Terstruktur HTML)
+
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment:
@@ -250,7 +243,6 @@ class _CartPageState extends State<CartPage> {
                                               fontSize: 16,
                                             ),
                                           ),
-                                          // Kontrol Kuantitas (Tactile Input Style)
                                           Container(
                                             decoration: BoxDecoration(
                                               color: colorSecondaryFixed
@@ -293,7 +285,6 @@ class _CartPageState extends State<CartPage> {
                       ),
                     ),
 
-                    // Sliding Sheet / Container Bottom Ringkasan Pembayaran
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(

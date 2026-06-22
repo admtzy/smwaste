@@ -23,7 +23,6 @@ class _EditProductPageState extends State<EditProductPage> {
   late String kategori;
   bool isLoading = false;
 
-  // Kode Warna Berdasarkan Desain Tailwind SmartWaste
   static const Color colorPrimary = Color(0xFF004E3B);
   static const Color colorBackground = Color(0xFFFCF9F8);
   static const Color colorSurfaceContainer = Color(0xFFF0EDEC);
@@ -94,7 +93,6 @@ class _EditProductPageState extends State<EditProductPage> {
     super.dispose();
   }
 
-  // Widget Pembantu untuk Membuat Label Form Elegan (Caps Style)
   Widget _buildFormLabel(String label) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -110,7 +108,6 @@ class _EditProductPageState extends State<EditProductPage> {
     );
   }
 
-  // Dekorasi Input Standar Meniru Style HTML
   InputDecoration _inputStyle({String? prefixText, String? hintText}) {
     return InputDecoration(
       prefixText: prefixText,
@@ -151,16 +148,14 @@ class _EditProductPageState extends State<EditProductPage> {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 16, 24, 120), // Padding ekstra di bawah agar tidak tertutup tombol
+        padding: const EdgeInsets.fromLTRB(24, 16, 24, 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ==========================================
-            // BOX PREVIEW GAMBAR (Meniru Desain HTML)
-            // ==========================================
+
             Container(
               width: double.infinity,
-              height: 192, // h-48 Tailwind
+              height: 192,
               decoration: BoxDecoration(
                 color: colorSurfaceContainer,
                 borderRadius: BorderRadius.circular(12),
@@ -191,7 +186,6 @@ class _EditProductPageState extends State<EditProductPage> {
             ),
             const SizedBox(height: 35),
 
-            // FORM UTAMA
             _buildFormLabel('Nama Produk'),
             TextField(
               controller: namaC,
@@ -209,7 +203,6 @@ class _EditProductPageState extends State<EditProductPage> {
             ),
             const SizedBox(height: 24),
 
-            // INPUT GRID: HARGA & STOK
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -271,10 +264,7 @@ class _EditProductPageState extends State<EditProductPage> {
           ],
         ),
       ),
-      
-      // ==========================================
-      // FIXED BOTTOM ACTION (Meniru Desain HTML)
-      // ==========================================
+
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
@@ -287,9 +277,9 @@ class _EditProductPageState extends State<EditProductPage> {
           child: ElevatedButton(
           onPressed: isLoading ? null : updateProduct,
           style: ElevatedButton.styleFrom(
-            backgroundColor: colorPrimary, // 👈 Gunakan variabel di sini
+            backgroundColor: colorPrimary,
             foregroundColor: Colors.white,
-            disabledBackgroundColor: colorPrimary.withOpacity(0.6), // 👈 Dan di sini
+            disabledBackgroundColor: colorPrimary.withOpacity(0.6),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),

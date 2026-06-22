@@ -5,9 +5,6 @@ import 'product/penjual_product_page.dart';
 import '../../services/product_service.dart';
 import '../../services/order_service.dart';
 
-// =========================================================================
-// CONTAINER UTAMA: MEMILIKI BOTTOM NAVIGATION BAR
-// =========================================================================
 class PenjualDashboard extends StatefulWidget {
   const PenjualDashboard({super.key});
 
@@ -18,7 +15,6 @@ class PenjualDashboard extends StatefulWidget {
 class _PenjualDashboardState extends State<PenjualDashboard> {
   int currentIndex = 0;
 
-  // Halaman-halaman sekarang aktif digunakan di sini
   final pages = [
     const PenjualHomePage(),
     const PenjualProductPage(),
@@ -137,9 +133,6 @@ class _PenjualDashboardState extends State<PenjualDashboard> {
   }
 }
 
-// =========================================================================
-// HALAMAN HOME: MENAMPILKAN RINGKASAN DATA REALTIME SUPABASE
-// =========================================================================
 class PenjualHomePage extends StatefulWidget {
   const PenjualHomePage({super.key});
 

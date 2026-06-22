@@ -11,9 +11,6 @@ class DetailProductPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ==========================================
-    // PALET WARNA (Mengikuti Konfigurasi HTML)
-    // ==========================================
     const Color colorPrimary = Color(0xFF004E3B);
     const Color colorBackground = Color(0xFFFCF9F8);
     const Color colorSurfaceContainerLowest = Color(0xFFFFFFFF);
@@ -23,9 +20,6 @@ class DetailProductPage extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: colorBackground,
-      // ==========================================
-      // TOP APP BAR
-      // ==========================================
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: colorOnSurface,
@@ -50,23 +44,19 @@ class DetailProductPage extends StatelessWidget {
           ),
         ),
       ),
-      // ==========================================
-      // MAIN CONTENT
-      // ==========================================
+
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0), // Padding Gutter HTML
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ==========================================
-              // PRODUCT IMAGE HERO (Box Center-Squared)
-              // ==========================================
+
               Center(
                 child: Container(
-                  width: 192, // w-48
-                  height: 192, // h-48
-                  margin: const EdgeInsets.only(bottom: 35), // spacing xxl
+                  width: 192,
+                  height: 192, 
+                  margin: const EdgeInsets.only(bottom: 35), 
                   decoration: BoxDecoration(
                     color: colorSurfaceContainerLowest,
                     borderRadius: BorderRadius.circular(12),
@@ -98,11 +88,8 @@ class DetailProductPage extends StatelessWidget {
                 ),
               ),
 
-              // ==========================================
-              // SECTION: INFORMASI PRODUK
-              // ==========================================
               Container(
-                padding: const EdgeInsets.all(16), // p-md
+                padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(bottom: 24),
                 decoration: BoxDecoration(
                   color: colorSurfaceContainerLowest,
@@ -155,10 +142,10 @@ class DetailProductPage extends StatelessWidget {
                           }),
                         );
                       },
-                    ),// Meniru border-dashed
+                    ),
                     const SizedBox(height: 8),
                     Row(
-                      // mainAxisAlignment: MainAxisAlignment.between,
+
                       children: [
                         const Text(
                           'Subtotal',
@@ -184,9 +171,6 @@ class DetailProductPage extends StatelessWidget {
                 ),
               ),
 
-              // ==========================================
-              // SECTION: LOKASI GPS & DESKRIPSI
-              // ==========================================
               Container(
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(bottom: 24),
@@ -238,9 +222,6 @@ class DetailProductPage extends StatelessWidget {
                 ),
               ),
 
-              // ==========================================
-              // SECTION: ULASAN PEMBELI & RATING
-              // ==========================================
               Container(
                 padding: const EdgeInsets.all(16),
                 margin: const EdgeInsets.only(bottom: 35),
@@ -253,7 +234,6 @@ class DetailProductPage extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
-                      // mainAxisAlignment: MainAxisAlignment.between,
                       children: [
                         const Text(
                           'Ulasan Pembeli',
@@ -264,7 +244,6 @@ class DetailProductPage extends StatelessWidget {
                             color: colorPrimary,
                           ),
                         ),
-                        // FutureBuilder Rating Ringkas (Atas)
                         FutureBuilder(
                           future: ReviewService().getRatingInfo(product["id"]),
                           builder: (context, snapshot) {
@@ -293,7 +272,6 @@ class DetailProductPage extends StatelessWidget {
                     Divider(color: colorOutlineVariant.withOpacity(0.5)),
                     const SizedBox(height: 12),
                     
-                    // FutureBuilder List Ulasan Lengkap
                     FutureBuilder(
                       future: ReviewService().getReviews(product["id"]),
                       builder: (context, snapshot) {
@@ -353,54 +331,13 @@ class DetailProductPage extends StatelessWidget {
           ),
         ),
       ),
-
-      // bottomNavigationBar: Container(
-      //   padding: const EdgeInsets.all(16),
-      //   decoration: BoxDecoration(
-      //     color: Colors.white,
-      //     border: Border(
-      //       top: BorderSide(color: colorOutlineVariant.withOpacity(0.3)),
-      //     ),
-      //   ),
-      //   // child: ElevatedButton(
-      //   //   onPressed: () {
-      //   //     // Logika cetak atau aksi lainnya
-      //   //   },
-      //   //   style: ElevatedButton.styleFrom(
-      //   //     backgroundColor: colorPrimary,
-      //   //     foregroundColor: Colors.white,
-      //   //     minimumSize: const Size(double.infinity, 50),
-      //   //     shape: RoundedRectangleBorder(
-      //   //       borderRadius: BorderRadius.circular(10),
-      //   //     ),
-      //   //     elevation: 0,
-      //   //   ),
-      //   //   child: const Row(
-      //   //     mainAxisAlignment: MainAxisAlignment.center,
-      //   //     children: [
-      //   //       Icon(Icons.print, size: 20),
-      //   //       SizedBox(width: 8),
-      //   //       Text(
-      //   //         'Cetak Resi',
-      //   //         style: TextStyle(
-      //   //           fontFamily: 'Hanken Grotesk',
-      //   //           fontWeight: FontWeight.bold,
-      //   //           fontSize: 16,
-      //   //         ),
-      //   //       ),
-      //   //     ],
-      //   //   ),
-      //   // ),
-      // ),
     );
   }
 
-  // Helper Widget untuk baris data info item (Justify Between)
   Widget _buildRowInfo(String label, String value, Color textCol, Color labelCol) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
-        // mainAxisAlignment: MainAxisAlignment.between,
         children: [
           Text(
             label,
@@ -425,9 +362,6 @@ class DetailProductPage extends StatelessWidget {
   }
 }
 
-// Custom painter sederhana untuk garis putus-putus pada divider bervariasi
 enum DividerStyle { solid, dashed }
 extension on Divider {
-  // Ditambahkan pembungkus custom jika ingin dashed murni di Flutter, 
-  // namun bawaan `Divider` default solid sudah cukup mewakili visual web.
 }

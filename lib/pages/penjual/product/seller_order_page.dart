@@ -95,9 +95,6 @@ class _SellerOrderPageState extends State<SellerOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    // ==========================================
-    // PALET WARNA (Bisa diakses dari mana saja di bawah ini)
-    // ==========================================
     const Color colorPrimary = Color(0xFF004E3B);
     const Color colorBackground = Color(0xFFFCF9F8);
     const Color colorSurfaceContainerLowest = Color(0xFFFFFFFF);
@@ -107,9 +104,6 @@ class _SellerOrderPageState extends State<SellerOrderPage> {
 
     return Scaffold(
       backgroundColor: colorBackground,
-      // ==========================================
-      // APP BAR
-      // ==========================================
       appBar: AppBar(
         backgroundColor: Colors.white,
         foregroundColor: colorOnSurface,
@@ -130,9 +124,6 @@ class _SellerOrderPageState extends State<SellerOrderPage> {
           ),
         ),
       ),
-      // ==========================================
-      // BODY (LOADING / EMPTY / LIST)
-      // ==========================================
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(color: colorPrimary),
@@ -186,9 +177,7 @@ class _SellerOrderPageState extends State<SellerOrderPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // TOP HEADER CARD: Judul Produk & Icon Panah
                               Row(
-                                // mainAxisAlignment: MainAxisAlignment.between,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
@@ -200,7 +189,7 @@ class _SellerOrderPageState extends State<SellerOrderPage> {
                                         fontSize: 16,
                                         color: colorOnSurface,
                                       ),
-                                    ), // FIX: Menggunakan tanda tutup kurung biasa ) yang benar
+                                    ),
                                   ),
                                   const Icon(
                                     Icons.arrow_forward_ios,
@@ -213,13 +202,11 @@ class _SellerOrderPageState extends State<SellerOrderPage> {
                               Divider(color: colorOutlineVariant.withOpacity(0.3)),
                               const SizedBox(height: 6),
 
-                              // CONTENT DATA: Baris Informasi Rata Kanan-Kiri
                               _buildCardRow('Qty', '${item['qty']}', colorOnSurface, colorOnSurfaceVariant),
                               _buildCardRow('Harga', 'Rp ${item['harga']}', colorOnSurface, colorOnSurfaceVariant),
                               
                               const SizedBox(height: 6),
                               
-                              // Pembatas Garis Putus-Putus Sebelum Subtotal
                               LayoutBuilder(
                                 builder: (context, constraints) {
                                   final dashCount = (constraints.constrainWidth() / 8).floor();
@@ -242,8 +229,6 @@ class _SellerOrderPageState extends State<SellerOrderPage> {
                               _buildCardRow('Subtotal', 'Rp ${item['subtotal']}', colorPrimary, colorOnSurface, isBoldValue: true),
                               
                               const SizedBox(height: 12),
-
-                              // BOTTOM CARD: Status Badge Mini Info
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
@@ -287,7 +272,6 @@ class _SellerOrderPageState extends State<SellerOrderPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
-        // mainAxisAlignment: MainAxisAlignment.between,
         children: [
           Text(
             label,

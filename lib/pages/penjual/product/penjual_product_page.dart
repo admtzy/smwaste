@@ -16,9 +16,6 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
   List products = [];
   bool isLoading = true;
 
-  // =========================
-  // LOAD PRODUCTS
-  // =========================
   Future<void> loadProducts() async {
     try {
       final data = await productService.getMyProducts();
@@ -40,9 +37,6 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
     }
   }
 
-  // =========================
-  // DELETE PRODUCT
-  // =========================
   Future<void> deleteProduct(String id) async {
     try {
       await productService.deleteProduct(id);
@@ -60,21 +54,14 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
     }
   }
 
-  // =========================
-  // INIT
-  // =========================
   @override
   void initState() {
     super.initState();
     loadProducts();
   }
 
-  // =========================
-  // UI
-  // =========================
   @override
   Widget build(BuildContext context) {
-    // Definisi Warna berdasarkan Design Token HTML SMARTWASTE
     const colorPrimary = Color(0xFF004E3B);
     const colorOnPrimary = Color(0xFFFFFFFF);
     const colorSurfaceContainerLowest = Color(0xFFFFFFFF);
@@ -83,15 +70,13 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
     const colorOnSurfaceVariant = Color(0xFF3F4944);
     const colorError = Color(0xFFBA1A1A);
 
-    // Hitung total stok rendah secara dinamis dari data jika memungkinkan, 
-    // jika data bertipe String kita amankan dengan try-catch atau defaults.
     int lowStockCount = products.where((p) {
       final stok = int.tryParse(p['stok'].toString()) ?? 0;
-      return stok <= 5; // Kriteria stok rendah sesuai contoh ampas kopi (5kg)
+      return stok <= 5;
     }).length;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFCF9F8), // bg-background
+      backgroundColor: const Color(0xFFFCF9F8),
       appBar: AppBar(
         backgroundColor: colorSurfaceContainerLowest,
         elevation: 0,
@@ -118,9 +103,6 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
         ],
       ),
 
-      // =========================
-      // ADD PRODUCT (FAB)
-      // =========================
       floatingActionButton: FloatingActionButton(
         backgroundColor: colorPrimary,
         foregroundColor: colorOnPrimary,
@@ -137,22 +119,17 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
         child: const Icon(Icons.add, size: 24),
       ),
 
-      // =========================
-      // BODY
-      // =========================
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(color: colorPrimary),
             )
           : CustomScrollView(
               slivers: [
-                // Summary Cards Section (Sama seperti grid atas di HTML)
                 SliverPadding(
                   padding: const EdgeInsets.fromLTRB(16, 24, 16, 16),
                   sliver: SliverToBoxAdapter(
                     child: Row(
                       children: [
-                        // Card 1: Total Produk
                         Expanded(
                           child: Container(
                             padding: const EdgeInsets.all(16),
@@ -184,7 +161,6 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
                           ),
                         ),
                         const SizedBox(width: 16),
-                        // Card 2: Stok Rendah
                         Expanded(
                           child: Container(
                             padding: const EdgeInsets.all(16),
@@ -220,7 +196,6 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
                   ),
                 ),
 
-                // Product List Section
                 products.isEmpty
                     ? const SliverFillRemaining(
                         hasScrollBody: false,
@@ -249,7 +224,6 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
                                   child: Row(
                                     crossAxisAlignment: CrossAxisAlignment.center,
                                     children: [
-                                      // Image Handler
                                       product['image_url'] != null && product['image_url'].toString().isNotEmpty
                                           ? ClipRRect(
                                               borderRadius: BorderRadius.circular(6),
@@ -270,15 +244,12 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
                                               child: const Icon(Icons.image),
                                             ),
                                       const SizedBox(width: 16),
-                                      
-                                      // Info Data Terstruktur (Meniru Flex-1 layout HTML)
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Row(
-                                              // mainAxisAlignment: MainAxisAlignment.between,
                                               children: [
                                                 Expanded(
                                                   child: Text(
@@ -293,7 +264,6 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
                                                   ),
                                                 ),
                                                 
-                                                // Dropdown Menu Tiga Titik
                                                 PopupMenuButton<String>(
                                                   icon: const Icon(Icons.more_vert, size: 20, color: colorOnSurfaceVariant),
                                                   padding: EdgeInsets.zero,
@@ -353,7 +323,6 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
                                             ),
                                             const SizedBox(height: 4),
                                             Row(
-                                              // mainAxisAlignment: MainAxisAlignment.between,
                                               children: [
                                                 Text(
                                                   'Rp ${product['harga']} / kg',
@@ -372,7 +341,6 @@ class _PenjualProductPageState extends State<PenjualProductPage> {
                                                 ),
                                               ],
                                             ),
-                                            // Menampilkan info lokasi di bawahnya (Opsional dari database Anda)
                                             if (product['kecamatan'] != null || product['kabupaten'] != null)
                                               Padding(
                                                 padding: const EdgeInsets.only(top: 2),

@@ -42,7 +42,6 @@ class _AdminProductPageState extends State<AdminProductPage> {
     }
   }
 
-  // ✅ FIX: harus kirim id + imageUrl
   Future<void> deleteProduct(
     String id,
     String imageUrl,
@@ -81,20 +80,19 @@ class _AdminProductPageState extends State<AdminProductPage> {
         ),
         builder: (_) {
           return DraggableScrollableSheet(
-            initialChildSize: 0.7, // Tinggi awal saat dibuka (70% layar)
-            minChildSize: 0.5,     // Tinggi minimal
-            maxChildSize: 0.95,    // Tinggi maksimal saat di-scroll mentok atas
+            initialChildSize: 0.7,
+            minChildSize: 0.5,
+            maxChildSize: 0.95, 
             expand: false,
             builder: (_, scrollController) {
               return Container(
                 color: Colors.white,
                 padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
                 child: SingleChildScrollView(
-                  controller: scrollController, // Menghubungkan scroll dengan bottom sheet
+                  controller: scrollController,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Garis penanda handle BottomSheet di bagian atas tengah
                       Center(
                         child: Container(
                           width: 40,
@@ -107,7 +105,6 @@ class _AdminProductPageState extends State<AdminProductPage> {
                         ),
                       ),
 
-                      // IMAGE
                       if (data['image_url'] != null && data['image_url'] != '')
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
@@ -131,7 +128,6 @@ class _AdminProductPageState extends State<AdminProductPage> {
 
                       const SizedBox(height: 16, width: double.infinity),
 
-                      // NAME
                       Text(
                         data['nama_produk'] ?? '-',
                         style: const TextStyle(
@@ -146,7 +142,6 @@ class _AdminProductPageState extends State<AdminProductPage> {
                         child: Divider(),
                       ),
 
-                      // INFO LIST
                       _buildDetailRow(Icons.monetization_on_outlined, 'Harga', 'Rp ${data['harga']}'),
                       _buildDetailRow(Icons.layers_outlined, 'Stok', '${data['stok']} unit'),
                       _buildDetailRow(Icons.category_outlined, 'Kategori', '${data['kategori']}'),
@@ -264,7 +259,7 @@ class _AdminProductPageState extends State<AdminProductPage> {
                           );
                         },
                       ),
-                      const SizedBox(height: 24), // Spacing bawah agar rapi saat scroll mentok
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -280,7 +275,6 @@ class _AdminProductPageState extends State<AdminProductPage> {
     }
   }
 
-  // Helper widget untuk mempercantik baris info detail di BottomSheet
   Widget _buildDetailRow(IconData icon, String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -305,7 +299,6 @@ class _AdminProductPageState extends State<AdminProductPage> {
     );
   }
 
-  // ✅ FIX: dialog harus terima 2 data
   void showDeleteDialog(
     String id,
     String imageUrl,
@@ -344,7 +337,7 @@ class _AdminProductPageState extends State<AdminProductPage> {
     const primaryGreen = Color(0xFF236652);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F9F7), // Background abu-hijau sangat bersih
+      backgroundColor: const Color(0xFFF7F9F7),
       appBar: AppBar(
         title: const Text(
           'Kelola Produk',
@@ -440,7 +433,7 @@ class _AdminProductPageState extends State<AdminProductPage> {
                               ),
                               trailing: IconButton(
                                 icon: const Icon(
-                                  Icons.delete_outline, // Menggunakan desain outline yang lebih bersih
+                                  Icons.delete_outline,
                                   color: Colors.redAccent,
                                 ),
                                 onPressed: () {

@@ -1,13 +1,9 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // Pastikan package ini sesuai tipe XFile Anda
-
-// Asumsi class import dari service Anda tetap berjalan aman di background
+import 'package:image_picker/image_picker.dart';
 import '../../../services/location_service.dart';
 import '../../../services/product_service.dart';
-// import 'services/product_service.dart';
-// import 'package:smartwaste/services/location_service.dart';
 
 class AddProductPage extends StatefulWidget {
   const AddProductPage({super.key});
@@ -17,12 +13,8 @@ class AddProductPage extends StatefulWidget {
 }
 
 class _AddProductPageState extends State<AddProductPage> {
-  // =========================
-  // LOGIC ASLI DART (PERTAHANKAN)
-  // =========================
   final productService = ProductService();
   final locationService = LocationService();
-
   final namaC = TextEditingController();
   final deskripsiC = TextEditingController();
   final hargaC = TextEditingController();
@@ -35,7 +27,6 @@ class _AddProductPageState extends State<AddProductPage> {
   double longitude = 0;
   bool isLoading = false;
 
-  // CAMERA LOGIC
   Future<void> pickCamera() async {
     try {
       final result = await productService.pickFromCamera();
@@ -49,7 +40,6 @@ class _AddProductPageState extends State<AddProductPage> {
     }
   }
 
-  // GALLERY LOGIC
   Future<void> pickGallery() async {
     try {
       final result = await productService.pickFromGallery();
@@ -63,7 +53,6 @@ class _AddProductPageState extends State<AddProductPage> {
     }
   }
 
-  // GET LOCATION LOGIC
   Future<void> getLocation() async {
     try {
       var position = await locationService.getCurrentLocation();
@@ -77,7 +66,6 @@ class _AddProductPageState extends State<AddProductPage> {
     }
   }
 
-  // SAVE PRODUCT LOGIC
   Future<void> saveProduct() async {
     try {
       if (namaC.text.isEmpty ||
@@ -150,12 +138,8 @@ class _AddProductPageState extends State<AddProductPage> {
     super.dispose();
   }
 
-  // =========================
-  // UI - DISESUAIKAN TOTAL DENGAN TAMPILAN HTML
-  // =========================
   @override
   Widget build(BuildContext context) {
-    // Definisi Tema Warna Hex Tailwind HTML SMARTWASTE
     const Color primaryGreen = Color(0xFF004E3B);
     const Color onPrimary = Color(0xFFFFFFFF);
     const Color backgroundBg = Color(0xFFF7F9F7);
@@ -167,7 +151,6 @@ class _AddProductPageState extends State<AddProductPage> {
 
     return Scaffold(
       backgroundColor: backgroundBg,
-      // TopAppBar khas HTML
       appBar: AppBar(
         backgroundColor: primaryGreen,
         elevation: 0,
@@ -187,12 +170,11 @@ class _AddProductPageState extends State<AddProductPage> {
       ),
       body: Center(
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 448), // Meniru batas 'max-w-md' di HTML web mockup
+          constraints: const BoxConstraints(maxWidth: 448),
           color: surfaceContainerLowest,
           child: ListView(
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 35),
             children: [
-              // Judul Halaman Form
               const Text(
                 'Tambah Produk',
                 style: TextStyle(
@@ -214,16 +196,12 @@ class _AddProductPageState extends State<AddProductPage> {
               ),
               const SizedBox(height: 24),
 
-              // =========================
-              // FOTO PRODUK SECTION
-              // =========================
               const Text(
                 'FOTO PRODUK',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: onSurfaceVariant, letterSpacing: 1.5, fontFamily: 'Hanken Grotesk'),
               ),
               const SizedBox(height: 8),
-              
-              // Preview Gambar Jika Ada / Jika Kosong Tampilkan Tombol Pilih
+
               if (image != null)
                 Container(
                   width: double.infinity,
@@ -237,7 +215,7 @@ class _AddProductPageState extends State<AddProductPage> {
                   ),
                 ),
 
-              // Baris Dua Tombol Kamera & Galeri (Menggantikan Area Unggah)
+
               Row(
                 children: [
                   Expanded(
@@ -269,9 +247,6 @@ class _AddProductPageState extends State<AddProductPage> {
               ),
               const SizedBox(height: 24),
 
-              // =========================
-              // NAMA PRODUK
-              // =========================
               const Text(
                 'NAMA PRODUK',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: onSurfaceVariant, letterSpacing: 1.5, fontFamily: 'Hanken Grotesk'),
@@ -291,9 +266,6 @@ class _AddProductPageState extends State<AddProductPage> {
               ),
               const SizedBox(height: 24),
 
-              // =========================
-              // KATEGORI (Mengubah Dropdown ke Choice Chips agar Sesuai HTML)
-              // =========================
               const Text(
                 'KATEGORI',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: onSurfaceVariant, letterSpacing: 1.5, fontFamily: 'Hanken Grotesk'),
@@ -322,7 +294,7 @@ class _AddProductPageState extends State<AddProductPage> {
                     onSelected: (bool selected) {
                       if (selected) {
                         setState(() {
-                          kategori = categoryItem; // Menyimpan value balik ke variabel 'kategori'
+                          kategori = categoryItem; 
                         });
                       }
                     },
@@ -331,9 +303,6 @@ class _AddProductPageState extends State<AddProductPage> {
               ),
               const SizedBox(height: 24),
 
-              // =========================
-              // DESKRIPSI PRODUK
-              // =========================
               const Text(
                 'DESKRIPSI PRODUK',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: onSurfaceVariant, letterSpacing: 1.5, fontFamily: 'Hanken Grotesk'),
@@ -353,10 +322,6 @@ class _AddProductPageState extends State<AddProductPage> {
                 ),
               ),
               const SizedBox(height: 24),
-
-              // =========================
-              // LOKASI PRODUK (GPS BUTTON)
-              // =========================
               const Text(
                 'LOKASI PRODUK',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: onSurfaceVariant, letterSpacing: 1.5, fontFamily: 'Hanken Grotesk'),
@@ -377,9 +342,6 @@ class _AddProductPageState extends State<AddProductPage> {
               ),
               const SizedBox(height: 24),
 
-              // =========================
-              // ALAMAT PENJEMPUTAN (OUTPUT KOORDINAT LOGIC)
-              // =========================
               const Text(
                 'ALAMAT PENJEMPUTAN (OTOMATIS)',
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: onSurfaceVariant, letterSpacing: 1.5, fontFamily: 'Hanken Grotesk'),
@@ -406,13 +368,9 @@ class _AddProductPageState extends State<AddProductPage> {
               ),
               const SizedBox(height: 24),
 
-              // =========================
-              // HARGA & STOK GRID (ROW)
-              // =========================
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Field Harga
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -443,7 +401,6 @@ class _AddProductPageState extends State<AddProductPage> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // Field Stok
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -473,9 +430,6 @@ class _AddProductPageState extends State<AddProductPage> {
               ),
               const SizedBox(height: 35),
 
-              // =========================
-              // SUBMIT BUTTON (SIMPAN PRODUK)
-              // =========================
               SizedBox(
                 height: 50,
                 child: ElevatedButton(

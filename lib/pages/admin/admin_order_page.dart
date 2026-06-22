@@ -12,7 +12,6 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
   final service = AdminOrderService();
   late Future<List<dynamic>> futureOrder;
   
-  // Warna konsisten dengan AdminProductPage
   final Color primaryGreen = const Color(0xFF236652);
 
   @override
@@ -89,20 +88,18 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Header Order
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            // Tambahkan Expanded agar teks menyesuaikan sisa ruang
                             Expanded(
                               child: Text(
                                 "Order ID: ${order["id"]}",
                                 style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                                overflow: TextOverflow.ellipsis, // Menambahkan titik-titik jika terlalu panjang
-                                maxLines: 1, // Memastikan teks hanya satu baris
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                               ),
                             ),
-                            const SizedBox(width: 8), // Memberi jarak antara teks dan chip
+                            const SizedBox(width: 8),
                             Chip(
                               backgroundColor: statusColor(order["payment_status"] ?? ""),
                               label: Text(
@@ -114,7 +111,6 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                         ),
                         const Divider(),
 
-                        // Section Pembeli
                         const Text("PEMBELI", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF236652))),
                         const SizedBox(height: 5),
                         Text("Nama   : ${buyer?["nama"] ?? "-"}"),
@@ -123,8 +119,6 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                         Text("Alamat : ${buyer?["alamat"] ?? "-"}"),
 
                         const SizedBox(height: 15),
-
-                        // Section Penjual & Produk
                         const Text("DETAIL PESANAN", style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF236652))),
                         const SizedBox(height: 5),
                         ...items.map<Widget>((e) {
@@ -150,8 +144,6 @@ class _AdminOrderPageState extends State<AdminOrderPage> {
                         }),
 
                         const Divider(),
-
-                        // Footer Harga (Informasi Lengkap Dipertahankan)
                         _buildPriceRow("Total Produk", "Rp ${order["total"]}"),
                         _buildPriceRow("Ongkir", "Rp ${order["total_ongkir"]}"),
                         _buildPriceRow("Admin Fee", "Rp ${order["admin_fee"]}"),

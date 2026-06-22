@@ -48,9 +48,6 @@ class _PaymentPageState
     );
   }
 
-  //---------------------------------
-  // BUKA MIDTRANS
-  //---------------------------------
 
   Future<void> bayar() async {
     final uri =
@@ -78,10 +75,6 @@ class _PaymentPageState
       ),
     );
   }
-
-  //---------------------------------
-  // CEK BUKTI PEMBAYARAN
-  //---------------------------------
 
   Future<void> cekBuktiPembayaran() async {
     try {
@@ -131,10 +124,6 @@ class _PaymentPageState
     }
   }
 
-  //---------------------------------
-  // UI
-  //---------------------------------
-
   @override
   Widget build(
       BuildContext context) {
@@ -156,10 +145,6 @@ class _PaymentPageState
                     .center,
             children: [
 
-              //---------------------------------
-              // BAYAR SEKARANG
-              //---------------------------------
-
               SizedBox(
                 width:
                     double.infinity,
@@ -176,10 +161,6 @@ class _PaymentPageState
               const SizedBox(
                 height: 20,
               ),
-
-              //---------------------------------
-              // LIHAT BUKTI PEMBAYARAN
-              //---------------------------------
 
               SizedBox(
                 width:

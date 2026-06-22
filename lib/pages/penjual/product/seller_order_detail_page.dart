@@ -43,7 +43,6 @@ class _SellerOrderDetailPageState extends State<SellerOrderDetailPage> {
     return "-";
   }
 
-  // Helper Warna Badge Status (Konsisten dengan halaman list)
   Color _getBadgeColor(String status) {
     switch (status) {
       case 'Selesai':
@@ -76,9 +75,6 @@ class _SellerOrderDetailPageState extends State<SellerOrderDetailPage> {
     final order = item["orders"];
     final String statusText = getStatus();
 
-    // ==========================================
-    // PALET WARNA (Konsisten dengan List)
-    // ==========================================
     const Color colorPrimary = Color(0xFF004E3B);
     const Color colorBackground = Color(0xFFFCF9F8);
     const Color colorSurfaceContainerLowest = Color(0xFFFFFFFF);
@@ -113,7 +109,6 @@ class _SellerOrderDetailPageState extends State<SellerOrderDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// FOTO PRODUK
             if ((item["image_url"] ?? "").toString().isNotEmpty) ...[
               Center(
                 child: Container(
@@ -141,9 +136,6 @@ class _SellerOrderDetailPageState extends State<SellerOrderDetailPage> {
               const SizedBox(height: 20),
             ],
 
-            /// =======================
-            /// KARTU INFORMASI PRODUK
-            /// =======================
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -182,10 +174,6 @@ class _SellerOrderDetailPageState extends State<SellerOrderDetailPage> {
             ),
 
             const SizedBox(height: 16),
-
-            /// =======================
-            /// KARTU INFORMASI PESANAN
-            /// =======================
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -217,7 +205,6 @@ class _SellerOrderDetailPageState extends State<SellerOrderDetailPage> {
                   const SizedBox(height: 8),
                   _buildDetailRow("Order ID", "${order?["id"] ?? "-"}", colorOnSurface, colorOnSurfaceVariant),
                   
-                  // Row khusus Status dengan Badge indah
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 6.0),
                     child: Row(
@@ -260,12 +247,6 @@ class _SellerOrderDetailPageState extends State<SellerOrderDetailPage> {
             ),
 
             const SizedBox(height: 32),
-
-            /// =======================
-            /// ACTION BUTTON / WIDGET STATUS BANNER
-            /// =======================
-
-            // 1. Kondisi Tombol Kirim Barang
             if (order != null && order["payment_status"] == "paid" && order["order_status"] == "processed")
               SizedBox(
                 width: double.infinity,
@@ -322,7 +303,6 @@ class _SellerOrderDetailPageState extends State<SellerOrderDetailPage> {
                 ),
               ),
 
-            // 2. Banner Status Sedang Dikirim
             if (order != null && order["order_status"] == "shipped")
               Container(
                 width: double.infinity,
@@ -349,7 +329,6 @@ class _SellerOrderDetailPageState extends State<SellerOrderDetailPage> {
                 ),
               ),
 
-            // 3. Banner Status Selesai
             if (order != null && order["order_status"] == "completed")
               Container(
                 width: double.infinity,
@@ -381,12 +360,10 @@ class _SellerOrderDetailPageState extends State<SellerOrderDetailPage> {
     );
   }
 
-  // Komponen pembangun Baris Detail Rata Kanan-Kiri yang bersih
   Widget _buildDetailRow(String label, String value, Color valueColor, Color labelColor, {bool isBoldValue = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6.0),
       child: Row(
-        // mainAxisAlignment: MainAxisAlignment.between,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(

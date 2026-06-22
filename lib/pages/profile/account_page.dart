@@ -14,13 +14,12 @@ class AccountPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final accountService = AccountService();
 
-    // Definisi Palet Warna Konsisten (SMARTWASTE Theme)
-    const colorBackground = Color(0xFFFCF9F8); // bg-background
-    const colorSurface = Color(0xFFFCF9F8); // bg-surface
-    const colorOnSurface = Color(0xFF1C1B1B); // text-on-surface
-    const colorPrimary = Color(0xFF004E3B); // primary green
-    const colorOnPrimary = Color(0xFFFFFFFF); // text-on-primary
-    const colorError = Color(0xFFBA1A1A); // error/destructive red
+    const colorBackground = Color(0xFFFCF9F8);
+    const colorSurface = Color(0xFFFCF9F8);
+    const colorOnSurface = Color(0xFF1C1B1B);
+    const colorPrimary = Color(0xFF004E3B);
+    const colorOnPrimary = Color(0xFFFFFFFF);
+    const colorError = Color(0xFFBA1A1A);
 
     return Scaffold(
       backgroundColor: colorBackground,
@@ -32,19 +31,16 @@ class AccountPage extends StatelessWidget {
           style: TextStyle(
             color: colorOnSurface,
             fontFamily: 'Hanken Grotesk',
-            fontSize: 20, // text-headline-md
+            fontSize: 20, 
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24.0), // px-lg dari desain dasar
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             children: [
-              /// ========================
-              /// BUTTON EDIT PROFILE
-              /// ========================
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -54,7 +50,7 @@ class AccountPage extends StatelessWidget {
                     foregroundColor: colorOnPrimary,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // rounded-lg
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   onPressed: () async {
@@ -78,11 +74,8 @@ class AccountPage extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 16), // gap-md
+              const SizedBox(height: 16),
 
-              /// ========================
-              /// BUTTON DELETE ACCOUNT
-              /// ========================
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -92,7 +85,7 @@ class AccountPage extends StatelessWidget {
                     foregroundColor: Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // rounded-lg
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   onPressed: () async {
