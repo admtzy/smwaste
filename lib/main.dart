@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'config/supabase_config.dart';
-import 'pages/auth/login_page.dart';
+import 'pages/splash_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage(),
+      home: SplashPage(),
     );
   }
 }

@@ -20,7 +20,6 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
   List products = [];
   bool isLoading = true;
 
-  // Warna tema disesuaikan dengan Dashboard Pembeli (Primary Green: 0xFF236652)
   final Color primaryGreen = const Color(0xFF236652);
   final Color colorBackground = const Color(0xfffcf9f8);
   final Color colorSurfaceContainerLowest = const Color(0xffffffff);
@@ -93,13 +92,12 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
     return Scaffold(
       backgroundColor: colorBackground,
       appBar: AppBar(
-        backgroundColor: primaryGreen, // Menggunakan warna primary
+        backgroundColor: primaryGreen,
         elevation: 0,
         scrolledUnderElevation: 0,
         automaticallyImplyLeading: false,
         title: Row(
           children: [
-            // Ikon Logo sesuai permintaan
             Container(
               width: 32,
               height: 32,
@@ -137,7 +135,7 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
                 },
                 icon: const Icon(
                   Icons.shopping_cart_outlined,
-                  color: Colors.white, // Warna ikon disesuaikan dengan latar AppBar
+                  color: Colors.white,
                 ),
               ),
               Positioned(
@@ -146,7 +144,7 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: const BoxDecoration(
-                    color: Colors.redAccent, // Warna badge agar kontras dengan hijau
+                    color: Colors.redAccent,
                     shape: BoxShape.circle,
                   ),
                   constraints: const BoxConstraints(
@@ -180,44 +178,8 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
                 color: colorSurfaceContainerLow,
                 borderRadius: BorderRadius.circular(10),
               ),
-              // padding: const EdgeInsets.symmetric(horizontal: 16),
-              // child: Row(
-              //   children: [
-              //     Icon(Icons.search, color: colorOnSurfaceVariant),
-              //     const SizedBox(width: 8),
-              //     Expanded(
-              //       child: TextField(
-              //         decoration: InputDecoration(
-              //           hintText: "Cari produk ramah lingkungan...",
-              //           hintStyle: TextStyle(
-              //             fontFamily: 'Hanken Grotesk',
-              //             color: colorOnSurfaceVariant.withOpacity(0.7),
-              //             fontSize: 14,
-              //           ),
-              //           border: InputBorder.none,
-              //           isDense: true,
-              //           contentPadding: EdgeInsets.zero,
-              //         ),
-              //       ),
-              //     ),
-              //   ],
-              // ),
             ),
           ),
-          // Container(
-          //   height: 48,
-          //   margin: const EdgeInsets.only(bottom: 16),
-          //   child: ListView(
-          //     scrollDirection: Axis.horizontal,
-          //     padding: const EdgeInsets.symmetric(horizontal: 16),
-          //     children: [
-          //       _buildChip('Semua', true),
-          //       _buildChip('Makanan Organik', false),
-          //       _buildChip('Daur Ulang', false),
-          //       _buildChip('Pupuk Kompos', false),
-          //     ],
-          //   ),
-          // ),
           Expanded(
             child: isLoading
                 ? Center(
@@ -402,29 +364,4 @@ class _PembeliProductPageState extends State<PembeliProductPage> {
       ),
     );
   }
-
-  // Widget _buildChip(String label, bool isActive) {
-  //   return Container(
-  //     margin: const EdgeInsets.only(right: 8),
-  //     child: ChoiceChip(
-  //       label: Text(label),
-  //       selected: isActive,
-  //       onSelected: (_) {},
-  //       labelStyle: TextStyle(
-  //         color: isActive ? Colors.white : colorOnSurfaceVariant,
-  //         fontWeight: FontWeight.w500,
-  //         fontSize: 13,
-  //       ),
-  //       backgroundColor: colorSurfaceContainerLow,
-  //       selectedColor: primaryGreen,
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.circular(99),
-  //         side: BorderSide(
-  //           color: isActive ? primaryGreen : colorSurfaceVariant,
-  //         ),
-  //       ),
-  //       showCheckmark: false,
-  //     ),
-  //   );
-  // }
 }

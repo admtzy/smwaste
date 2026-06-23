@@ -62,7 +62,7 @@ class _ReviewPageState extends State<ReviewPage> {
         ),
       );
     } finally {
-      // PERBAIKAN: Menjamin status loading kembali ke false baik saat sukses maupun terjadi error
+      
       if (mounted) {
         setState(() {
           loading = false;
@@ -79,14 +79,13 @@ class _ReviewPageState extends State<ReviewPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Definisi Palet Warna Konsisten (SMARTWASTE Theme)
-    const colorBackground = Color(0xFFFCF9F8); // bg-background
-    const colorSurface = Color(0xFFFCF9F8); // bg-surface
-    const colorOnSurface = Color(0xFF1C1B1B); // text-on-surface
-    const colorOnSurfaceVariant = Color(0xFF3F4944); // text-on-surface-variant
-    const colorOutlineVariant = Color(0xFFBFC9C3); // border-outline-variant
-    const colorPrimary = Color(0xFF004E3B); // primary green
-    const colorOnPrimary = Color(0xFFFFFFFF); // text-on-primary
+    const colorBackground = Color(0xFFFCF9F8);
+    const colorSurface = Color(0xFFFCF9F8);
+    const colorOnSurface = Color(0xFF1C1B1B);
+    const colorOnSurfaceVariant = Color(0xFF3F4944);
+    const colorOutlineVariant = Color(0xFFBFC9C3);
+    const colorPrimary = Color(0xFF004E3B);
+    const colorOnPrimary = Color(0xFFFFFFFF);
 
     return Scaffold(
       backgroundColor: colorBackground,
@@ -110,23 +109,20 @@ class _ReviewPageState extends State<ReviewPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0), // Menyesuaikan px-lg dari desain sebelumnya
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Judul Pertanyaan Kualitas
               const Text(
                 "Bagaimana kualitas produk ini?",
                 style: TextStyle(
                   color: colorOnSurface,
                   fontFamily: 'Hanken Grotesk',
-                  fontSize: 16, // setara text-title-sm
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 24),
-
-              // Baris Rating Bintang
               Center(
                 child: RatingBar.builder(
                   initialRating: 5,
@@ -144,8 +140,6 @@ class _ReviewPageState extends State<ReviewPage> {
                 ),
               ),
               const SizedBox(height: 32),
-
-              // Input Teks Ulasan dengan style border outline-variant tipis
               TextField(
                 controller: reviewController,
                 maxLines: 5,
@@ -162,7 +156,7 @@ class _ReviewPageState extends State<ReviewPage> {
                     fontFamily: 'Hanken Grotesk',
                   ),
                   filled: true,
-                  fillColor: const Color(0xFFFFFFFF), // bg-surface-container-lowest
+                  fillColor: const Color(0xFFFFFFFF),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(color: colorPrimary, width: 1.5),
@@ -175,7 +169,6 @@ class _ReviewPageState extends State<ReviewPage> {
               ),
               const SizedBox(height: 32),
 
-              // Tombol Kirim Utama
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -185,7 +178,7 @@ class _ReviewPageState extends State<ReviewPage> {
                     foregroundColor: colorOnPrimary,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8), // rounded-lg
+                      borderRadius: BorderRadius.circular(8),
                     ),
                   ),
                   onPressed: loading ? null : submitReview,

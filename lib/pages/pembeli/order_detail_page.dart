@@ -82,26 +82,22 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
   @override
   Widget build(BuildContext context) {
     final order = widget.order;
-
-    // Defenisi Palet Warna Berdasarkan HTML Tailwind SMARTWASTE
-    const colorBackground = Color(0xFFFCF9F8); // bg-background
-    const colorSurface = Color(0xFFFCF9F8); // bg-surface
-    const colorOnSurface = Color(0xFF1C1B1B); // text-on-surface
-    const colorOnSurfaceVariant = Color(0xFF3F4944); // text-on-surface-variant
-    const colorSurfaceContainerLowest = Color(0xFFFFFFFF); // bg-surface-container-lowest
-    const colorOutlineVariant = Color(0xFFBFC9C3); // border-outline-variant
-    const colorPrimary = Color(0xFF004E3B); // text-primary / button primary
-    const colorOnPrimary = Color(0xFFFFFFFF); // text-on-primary
+    const colorBackground = Color(0xFFFCF9F8);
+    const colorSurface = Color(0xFFFCF9F8);
+    const colorOnSurface = Color(0xFF1C1B1B);
+    const colorOnSurfaceVariant = Color(0xFF3F4944);
+    const colorSurfaceContainerLowest = Color(0xFFFFFFFF);
+    const colorOutlineVariant = Color(0xFFBFC9C3);
+    const colorPrimary = Color(0xFF004E3B);
+    const colorOnPrimary = Color(0xFFFFFFFF);
 
     return Scaffold(
       backgroundColor: colorBackground,
-      // Top App Bar sesuai rancangan <header class="bg-surface">
       appBar: AppBar(
         backgroundColor: colorSurface,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: colorOnSurface),
-          // PERBAIKAN: Menggunakan maybePop agar lebih aman bagi tumpukan navigasi
           onPressed: () => Navigator.maybePop(context),
         ),
         titleSpacing: 0,
@@ -110,7 +106,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           style: TextStyle(
             color: colorOnSurface,
             fontFamily: 'Hanken Grotesk',
-            fontSize: 20, // text-headline-md
+            fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -120,18 +116,15 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
           children: [
             Expanded(
               child: ListView(
-                padding: const EdgeInsets.all(24.0), // px-lg py-md
+                padding: const EdgeInsets.all(24.0),
                 children: [
-                  /// ========================
-                  /// STATUS ORDER (Section)
-                  /// ========================
                   Container(
                     width: double.infinity,
-                    padding: const EdgeInsets.only(bottom:16.0), // pb-md
+                    padding: const EdgeInsets.only(bottom:16.0), 
                     decoration: BoxDecoration(
                       border: Border(
                         bottom: BorderSide(
-                          color: colorOutlineVariant.withOpacity(0.3), // border-outline-variant/30
+                          color: colorOutlineVariant.withOpacity(0.3), 
                           width: 1.0,
                         ),
                       ),
@@ -144,27 +137,27 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                           style: const TextStyle(
                             color: colorOnSurface,
                             fontFamily: 'Hanken Grotesk',
-                            fontSize: 16, // text-title-sm
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 8), // gap-sm
+                        const SizedBox(height: 8),
                         Text(
                           "Payment : ${order["payment_status"] ?? "-"}",
                           style: const TextStyle(
                             color: colorOnSurfaceVariant,
                             fontFamily: 'Hanken Grotesk',
-                            fontSize: 14, // text-body-medium
+                            fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(height: 4), // gap-xs
+                        const SizedBox(height: 4),
                         Text(
                           "Order Status : ${order["order_status"] ?? "-"}",
                           style: const TextStyle(
                             color: colorOnSurfaceVariant,
                             fontFamily: 'Hanken Grotesk',
-                            fontSize: 14, // text-body-medium
+                            fontSize: 14,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -195,24 +188,20 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 35), // gap-xxl dari template
-
-                  /// ========================
-                  /// LIST PRODUK (Section)
-                  /// ========================
+                  const SizedBox(height: 35),
                   ...items.map((item) {
                     return Container(
                       margin: const EdgeInsets.only(bottom: 16.0),
-                      padding: const EdgeInsets.all(16.0), // p-md
+                      padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
                         color: colorSurfaceContainerLowest,
-                        borderRadius: BorderRadius.circular(12), // rounded-xl
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: colorOnSurface.withOpacity(0.1), // border-black/10
+                          color: colorOnSurface.withOpacity(0.1),
                         ),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05), // shadow-sm
+                            color: Colors.black.withOpacity(0.05),
                             blurRadius: 4,
                             offset: const Offset(0, 2),
                           ),
@@ -221,13 +210,12 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Gambar Produk Kiri
                           Container(
                             width: 60,
                             height: 60,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF6F3F2), // bg-surface-container-low
-                              borderRadius: BorderRadius.circular(8), // rounded-lg
+                              color: const Color(0xFFF6F3F2),
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             clipBehavior: Clip.antiAlias,
                             child: item["products"]?["image_url"] != null
@@ -237,9 +225,8 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                   )
                                 : const Icon(Icons.image, color: colorOutlineVariant),
                           ),
-                          const SizedBox(width: 16), // gap-md
+                          const SizedBox(width: 16),
 
-                          // Rincian Teks Kanan
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -249,17 +236,17 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                   style: const TextStyle(
                                     color: colorOnSurface,
                                     fontFamily: 'Hanken Grotesk',
-                                    fontSize: 14, // text-body-medium
+                                    fontSize: 14,
                                     fontWeight: FontWeight.w500,
                                   ),
                                 ),
-                                const SizedBox(height: 4), // gap-xs
+                                const SizedBox(height: 4),
                                 Text(
                                   "Qty : ${item["qty"] ?? 0}",
                                   style: const TextStyle(
                                     color: colorOnSurfaceVariant,
                                     fontFamily: 'Hanken Grotesk',
-                                    fontSize: 12, // text-body-sm
+                                    fontSize: 12,
                                   ),
                                 ),
                                 Text(
@@ -267,16 +254,16 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                                   style: const TextStyle(
                                     color: colorOnSurfaceVariant,
                                     fontFamily: 'Hanken Grotesk',
-                                    fontSize: 12, // text-body-sm
+                                    fontSize: 12,
                                   ),
                                 ),
-                                const SizedBox(height: 4), // mt-xs
+                                const SizedBox(height: 4),
                                 Text(
                                   "Subtotal : Rp ${item["subtotal"] ?? 0}",
                                   style: const TextStyle(
-                                    color: colorPrimary, // text-primary
+                                    color: colorPrimary,
                                     fontFamily: 'Hanken Grotesk',
-                                    fontSize: 16, // text-title-sm
+                                    fontSize: 16,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -291,9 +278,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
               ),
             ),
 
-            /// ========================
-            /// BUTTON BARANG DITERIMA
-            /// ========================
             if (order["payment_status"] == "paid" && order["order_status"] == "shipped")
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -306,7 +290,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       foregroundColor: colorOnPrimary,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8), // rounded-lg
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     onPressed: loading
@@ -346,7 +330,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                               );
                             }
 
-                            // PERBAIKAN: Melindungi setState di dalam blok catch/akhir fungsi async
                             if (mounted) {
                               setState(() {
                                 loading = false;
@@ -374,9 +357,6 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                 ),
               ),
 
-            /// ========================
-            /// BUTTON REVIEW
-            /// ========================
             if (order["order_status"] == "completed" && !sudahReview && items.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -389,7 +369,7 @@ class _OrderDetailPageState extends State<OrderDetailPage> {
                       foregroundColor: colorOnPrimary,
                       elevation: 0,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8), // rounded-lg
+                        borderRadius: BorderRadius.circular(8),
                       ),
                     ),
                     onPressed: () async {

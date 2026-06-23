@@ -3,9 +3,7 @@ import '../../services/order_service.dart';
 import 'order_detail_page.dart';
 
 class OrderPage extends StatefulWidget {
-  const OrderPage({
-    super.key,
-  });
+  const OrderPage({super.key,});
 
   @override
   State<OrderPage> createState() => _OrderPageState();
@@ -78,7 +76,7 @@ class _OrderPageState extends State<OrderPage> {
       appBar: AppBar(
         backgroundColor: colorSurface,
         elevation: 0,
-        automaticallyImplyLeading: false, // Tombol back default telah dinonaktifkan
+        automaticallyImplyLeading: false,
         title: const Text(
           'Pesanan Saya',
           style: TextStyle(

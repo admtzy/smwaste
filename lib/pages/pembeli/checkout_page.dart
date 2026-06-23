@@ -26,9 +26,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   bool isLoading = false;
 
-  // =========================
-  // CHECKOUT LOGIC
-  // =========================
   Future<void> prosesCheckout() async {
     try {
       setState(() {
@@ -54,9 +51,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
         throw Exception("URL pembayaran kosong");
       }
 
-      // =========================
-      // PINDAH KE PAYMENT PAGE
-      // =========================
       final resultPayment = await Navigator.push(
         context,
         MaterialPageRoute(
@@ -76,7 +70,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
           ),
         );
 
-        // PERBAIKAN: Menggunakan Navigator.of(context).pop secara aman
         if (mounted) {
           Navigator.pop(context, true);
         }
@@ -104,7 +97,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Definisi Palet Warna Berdasarkan Tema HTML
     const colorPrimary = Color(0xFF004E3B);
     const colorOnPrimary = Color(0xFFFFFFFF);
     const colorBackground = Color(0xFFFCF9F8);
@@ -116,13 +108,11 @@ class _CheckoutPageState extends State<CheckoutPage> {
 
     return Scaffold(
       backgroundColor: colorBackground,
-      // Top App Bar sesuai dengan <header class="bg-primary">
       appBar: AppBar(
         backgroundColor: colorPrimary,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: colorOnPrimary),
-          // PERBAIKAN: Menggunakan maybePop untuk memastikan tumpukan navigasi aman
           onPressed: () => Navigator.maybePop(context),
         ),
         title: const Text(
@@ -139,14 +129,12 @@ class _CheckoutPageState extends State<CheckoutPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Konten Utama dengan Padding
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Heading Judul Halaman
                     const Text(
                       "Checkout",
                       style: TextStyle(
@@ -157,8 +145,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    // Cost Breakdown Card (bg-surface-container-lowest)
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
@@ -170,7 +156,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                       ),
                       child: Column(
                         children: [
-                          // Total Produk
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -195,7 +180,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           ),
                           const SizedBox(height: 16),
 
-                          // Ongkir
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -220,7 +204,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           ),
                           const SizedBox(height: 16),
 
-                          // Admin Fee
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -245,7 +228,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                           ),
                           const SizedBox(height: 8),
 
-                          // Divider
                           const Padding(
                             padding: EdgeInsets.symmetric(vertical: 8.0),
                             child: Divider(
@@ -254,7 +236,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
                             ),
                           ),
 
-                          // Grand Total
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -286,7 +267,6 @@ class _CheckoutPageState extends State<CheckoutPage> {
               ),
             ),
 
-            // Bottom Action Bar (Fixed di bagian bawah)
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(

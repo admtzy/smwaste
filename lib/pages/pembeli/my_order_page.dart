@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../../services/order_service.dart';
 import 'order_detail_page.dart';
 
-// 1. Buat RouteObserver global di file main.dart Anda jika belum ada:
-// final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
 class MyOrderPage extends StatefulWidget {
   const MyOrderPage({
@@ -14,8 +12,6 @@ class MyOrderPage extends StatefulWidget {
   @override
   State<MyOrderPage> createState() => _MyOrdersPageState();
 }
-
-// Tambahkan RouteAware pada State kelas Anda
 class _MyOrdersPageState extends State<MyOrderPage> with RouteAware {
   final orderService = OrderService();
   List orders = [];
@@ -30,26 +26,20 @@ class _MyOrdersPageState extends State<MyOrderPage> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Daftarkan halaman ini ke routeObserver global
-    // routeObserver.subscribe(this, ModalRoute.of(context)! as PageRoute<void>);
   }
 
   @override
   void dispose() {
-    // Batalkan pendaftaran saat widget dihancurkan
-    // routeObserver.unsubscribe(this);
     super.dispose();
   }
 
-  // Fungsi ini otomatis berjalan saat halaman di atasnya di-pop (pengguna kembali ke halaman ini)
   @override
   void didPopNext() {
-    loadOrders(); // Muat ulang otomatis data pesanan baru
+    loadOrders();
   }
 
   Future<void> loadOrders() async {
     try {
-      // Memastikan indikator loading muncul jika data kosong
       if (orders.isEmpty) {
         setState(() {
           isLoading = true;

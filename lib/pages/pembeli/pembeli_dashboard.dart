@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../profile/edit_profile_page.dart';
-// import 'cart_page.dart';
 import 'pembeli_product_page.dart';
 import 'my_order_page.dart';
 
@@ -13,8 +12,7 @@ class PembeliDashboard extends StatefulWidget {
 
 class _PembeliDashboardState extends State<PembeliDashboard> {
   int currentIndex = 0;
-  
-  // Warna tema yang diseragamkan dengan halaman lain
+
   final Color primaryGreen = const Color(0xFF236652);
 
   late final List<Widget> pages;
@@ -24,7 +22,6 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
     super.initState();
     pages = [
       const PembeliProductPage(),
-      // const CartPage(),
       const MyOrderPage(),
       const EditProfilePage(),
     ];
@@ -40,7 +37,6 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         type: BottomNavigationBarType.fixed,
-        // Diterapkan warna agar konsisten dengan tema hijau aplikasi
         selectedItemColor: primaryGreen,
         unselectedItemColor: Colors.grey,
         backgroundColor: Colors.white,
@@ -54,10 +50,6 @@ class _PembeliDashboardState extends State<PembeliDashboard> {
             icon: Icon(Icons.storefront),
             label: 'Produk',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(Icons.shopping_cart),
-          //   label: 'Keranjang',
-          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.receipt_long),
             label: 'Pesanan',
